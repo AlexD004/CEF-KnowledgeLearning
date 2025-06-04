@@ -25,7 +25,7 @@ final class PublicController extends AbstractController
         return $this->render('public/login.html.twig');
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route('/register', name: 'register')]
     public function register(Request $request, UserRegistrationService $registrationService): Response
     {
         $user = new User();
@@ -39,7 +39,7 @@ final class PublicController extends AbstractController
 
             $this->addFlash('success', 'Your account has been created. You can now log in.');
 
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('public/register.html.twig', [
