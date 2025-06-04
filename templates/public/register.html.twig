@@ -4,6 +4,14 @@
 
 {% block body %}
 <div class="wrapper">
-    <h1>Page d'inscription</h1>
+    <h1>Créer un compte utilisateur</h1>
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.firstName) }}
+        {{ form_row(registrationForm.lastName) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.plainPassword) }}
+        <button type="submit" class="btn btn-primary">Register</button>
+    {{ form_end(registrationForm) }}
 </div>
 {% endblock %}
