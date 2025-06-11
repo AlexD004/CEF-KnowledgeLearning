@@ -19,12 +19,6 @@ final class PublicController extends AbstractController
         return $this->render('public/index.html.twig');
     }
 
-    #[Route('/login', name: 'login')]
-    public function login(): Response
-    {
-        return $this->render('public/login.html.twig');
-    }
-
     #[Route('/register', name: 'register')]
     public function register(Request $request, UserRegistrationService $registrationService): Response
     {
