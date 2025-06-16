@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %} - Connexion{% endblock %}
 
 {% block body %}
+<div class="wrapper content">
     <form method="post" data-turbo="false">
         {% if error %}
             <div class="alert alert-danger">
@@ -10,7 +11,7 @@
             </div>
         {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <h1>Connectez vous</h1>
 
         <label for="email">Email</label>
         <input
@@ -38,4 +39,5 @@
 
         <button class="btn btn-lg btn-primary" type="submit">Se connecter</button>
     </form>
+</div>
 {% endblock %}
