@@ -44,7 +44,7 @@ security:
     # Access rules for different parts of the application
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }        # Only admins can access /admin
-        - { path: ^/dashboard, roles: ROLE_CLIENT }   # Clients and admins can access /dashboard
+        - { path: ^/apprenant, roles: ROLE_CLIENT }   # Clients and admins can access /dashboard
 
 # Test environment: use lightweight password hashing to speed up tests
 when@test:

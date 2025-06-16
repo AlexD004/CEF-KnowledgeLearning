@@ -2,9 +2,10 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <title>Knowledge Learning{% block title %}{% endblock %}</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/favicon-knowledge.png') }}">
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -13,15 +14,75 @@
     </head>
     <body>
     <header>
-        <nav>
+        <div class="wrapper">
+            <a href="/"><img class="logo" src="{{ asset('images/logo-knowledge.png') }}" alt="Knowledge"></a>
+            
             {% if app.user %}
-                Bonjour {{ app.user.firstName }} |
-                <a href="{{ path('logout') }}">Se déconnecter</a>
-            {% else %}
-                <a href="{{ path('login') }}">Se connecter</a> |
-                <a href="{{ path('register') }}">Créer un compte</a>
+                <nav class="menu">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a
+                            class="
+                                listUsers
+                                {% if app.request.get('_route') == 'admin_users' %}active{% endif %}
+                            "
+                            href="{{ path('admin_users') }}"
+                        >Utilisateurs</a>
+                        <a
+                            class="
+                                listFormations
+                                {% if app.request.get('_route') == 'admin_formations' %}active{% endif %}
+                            "
+                            href="{{ path('admin_formations') }}"
+                        >Formations</a>
+                        <a
+                            class="
+                                listOrders
+                                {% if app.request.get('_route') == 'admin_orders' %}active{% endif %}
+                            "
+                            href="{{ path('admin_orders') }}"
+                        >Historique</a>
+                    {% elseif is_granted('ROLE_CLIENT') %}
+                        <a 
+                            class="
+                                userInfos
+                                {% if app.request.get('_route') == 'client_informations' %}active{% endif %}
+                            "
+                            href="{{ path('client_informations') }}"
+                        >Informations</a>
+                        <a
+                            class="
+                                userFormations
+                                {% if app.request.get('_route') == 'client_formations' %}active{% endif %}
+                            "
+                            href="{{ path('client_formations') }}"
+                        >Formations</a>
+                        <a
+                            class="
+                                userCertificates
+                                {% if app.request.get('_route') == 'client_certificates' %}active{% endif %}
+                            "
+                            href="{{ path('client_certificates') }}"
+                        >Certificats</a>
+                        <a
+                            class="
+                                userOrders
+                                {% if app.request.get('_route') == 'client_orders' %}active{% endif %}
+                            "
+                            href="{{ path('client_orders') }}"
+                        >Achats</a>
+                    {% endif %}
+                </nav>
             {% endif %}
-        </nav>
+            <nav class="auth">
+                {% if app.user %}
+                    {{ app.user.firstName }} {{ app.user.lastName }} |
+                    <a href="{{ path('logout') }}">Se déconnecter</a>
+                {% else %}
+                    <a href="{{ path('login') }}">Se connecter</a> |
+                    <a href="{{ path('register') }}">Créer un compte</a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
         {% block body %}{% endblock %}
     </body>

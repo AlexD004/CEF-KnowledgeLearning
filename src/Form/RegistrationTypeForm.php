@@ -17,28 +17,28 @@ class RegistrationTypeForm extends AbstractType
     {
         $builder
             ->add('firstName', TextType::class, [
-                'label' => 'First name',
+                'label' => 'Prénom',
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(['min' => 2]),
                 ],
             ])
             ->add('lastName', TextType::class, [
-                'label' => 'Last name',
+                'label' => 'Nom',
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(['min' => 2]),
                 ],
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email address',
+                'label' => 'Email',
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Email(),
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'Password',
+                'label' => 'Mot de passe',
                 'mapped' => false, // not linked to User::$password
                 'constraints' => [
                     new Assert\NotBlank(),
