@@ -1,39 +1,57 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # Use the best password hashing algorithm based on the current PHP version
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+
+    # Load users from the database via the User entity using the email field
     providers:
-        users_in_memory: { memory: null }
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
     firewalls:
+        # Disable security for the Symfony profiler and static assets
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # Main application firewall
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_user_provider
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+            # Use custom login form authenticator
+            custom_authenticator: App\Security\LoginFormAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            # Enable logout functionality
+            logout:
+                path: logout
+                # target: homepage  # Optional: uncomment to redirect after logout
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+            # Optional: Remember-me functionality
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week in seconds
+                path: /
+
+    # Role hierarchy: Admin inherits Client privileges
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_CLIENT]
+        ROLE_CLIENT: []
+
+    # Access rules for different parts of the application
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/admin, roles: ROLE_ADMIN }        # Only admins can access /admin
+        - { path: ^/dashboard, roles: ROLE_CLIENT }   # Clients and admins can access /dashboard
 
+# Test environment: use lightweight password hashing to speed up tests
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+                cost: 4           # Minimal bcrypt cost
+                time_cost: 3      # Minimal argon time cost
+                memory_cost: 10   # Minimal argon memory cost
