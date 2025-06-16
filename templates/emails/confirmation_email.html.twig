@@ -1,0 +1,21 @@
+{# templates/emails/confirmation_email.html.twig #}
+
+<h1>Welcome to Knowledge Learning!</h1>
+
+<p>Hello {{ user.firstName }},</p>
+
+<p>
+    Thank you for registering. Please confirm your email address by clicking the link below:
+</p>
+
+<p>
+    <a href="{{ signedUrl }}">Confirm my email</a>
+</p>
+
+<p>
+    This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>
+
+<p>
+    If you did not register on our platform, please ignore this email.
+</p>

@@ -63,6 +63,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?User $updatedBy = null;
 
+    /**
+     * @var bool Whether the user's email address has been verified
+     */
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
 
     /**
      * Getter / Setter
@@ -228,5 +234,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Check if the user's email address is verified.
+     *
+     * @return bool True if verified, false otherwise
+     */
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    /**
+     * Mark the user's email address as verified or not.
+     *
+     * @param bool $isVerified Whether the email has been verified
+     * @return self
+     */
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+        return $this;
+    }
 
 }

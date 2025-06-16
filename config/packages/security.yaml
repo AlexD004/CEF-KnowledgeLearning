@@ -1,56 +1,57 @@
 security:
+    # Use the best password hashing algorithm based on the current PHP version
     password_hashers:
-        # Use the best hashing algorithm available for the current PHP version
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
+    # Load users from the database via the User entity using the email field
     providers:
-        # Load users from the database via the User entity and match by email
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
 
     firewalls:
-        # Disable security on Symfony profiler and static assets
+        # Disable security for the Symfony profiler and static assets
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        # Main application firewall
         main:
             lazy: true
             provider: app_user_provider
 
-            # Enable form-based login
-            form_login:
-                login_path: login          # Route to display the login form (GET)
-                check_path: login          # Route to handle form submission (POST)
-                username_parameter: email
-                password_parameter: password
-                default_target_path: homepage  # Redirect after successful login
-                enable_csrf: true
+            # Use custom login form authenticator
+            custom_authenticator: App\Security\LoginFormAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
 
             # Enable logout functionality
             logout:
-                path: logout           # Logout route
-                # where to redirect after logout
-                # target: app_any_route
+                path: logout
+                # target: homepage  # Optional: uncomment to redirect after logout
 
-    # Role hierarchy: admin inherits client privileges
+            # Optional: Remember-me functionality
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week in seconds
+                path: /
+
+    # Role hierarchy: Admin inherits Client privileges
     role_hierarchy:
         ROLE_ADMIN: [ROLE_CLIENT]
         ROLE_CLIENT: []
 
-    # Access rules for different parts of the site
+    # Access rules for different parts of the application
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }        # Only admins can access /admin
         - { path: ^/dashboard, roles: ROLE_CLIENT }   # Clients and admins can access /dashboard
 
-# Test environment: use light password hashing to speed up test execution
+# Test environment: use lightweight password hashing to speed up tests
 when@test:
     security:
         password_hashers:
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4           # Lowest possible for bcrypt
-                time_cost: 3      # Lowest possible for argon
-                memory_cost: 10   # Lowest possible for argon
+                cost: 4           # Minimal bcrypt cost
+                time_cost: 3      # Minimal argon time cost
+                memory_cost: 10   # Minimal argon memory cost
