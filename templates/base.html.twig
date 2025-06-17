@@ -23,9 +23,9 @@
                         <a
                             class="
                                 listUsers
-                                {% if app.request.get('_route') == 'admin_users' %}active{% endif %}
+                                {% if app.request.get('_route') == 'admin_user_list' %}active{% endif %}
                             "
-                            href="{{ path('admin_users') }}"
+                            href="{{ path('admin_user_list') }}"
                         >Utilisateurs</a>
                         <a
                             class="

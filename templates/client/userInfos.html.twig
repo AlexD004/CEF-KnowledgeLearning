@@ -4,6 +4,13 @@
 
 {% block body %}
 <div class="wrapper content">
-    <h1>Client : Informations</h1>
+    <h1>Mes informations</h1>
+    {{ form_start(form) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword) }}
+        <button class="btn btn-primary">Mettre à jour</button>
+    {{ form_end(form) }}
 </div>
 {% endblock %}

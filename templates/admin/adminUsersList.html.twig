@@ -1,0 +1,46 @@
+{# 
+  /**
+   * Template that displays the list of all users for the admin interface.
+   * 
+   * Each user entry shows:
+   * - First name
+   * - Last name
+   * - Email
+   * - Roles
+   * 
+   * Admins can:
+   * - Click to edit a user
+   * - Add a new user
+   */
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %} - Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="wrapper content">
+
+    <h1>Utilisateurs</h1>
+    <a href="{{ path('admin_user_create') }}" class="btn btn-success">Ajouter utilisateur</a>
+
+    <ul class="itemList">
+        {% for user in users %}
+        <li>
+            <div class="itemInfos">
+                <strong>{{ user.firstName }} {{ user.lastName }}</strong> | {{ user.email }} | {{ user.roles|join(', ') }}
+            </div>
+            <div class="itemActions">
+                <a href="{{ path('admin_user_edit', {id: user.id}) }}">Modifier</a>
+                |
+                <form method="post" action="{{ path('admin_user_delete', {id: user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+</div>
+{% endblock %}

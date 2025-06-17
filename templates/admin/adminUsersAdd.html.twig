@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} - Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="wrapper content">
+
+    <h1>{{ user ? 'Modifier Utilisateur' : 'Ajouter Utilisateur' }}</h1>
+
+    {{ form_start(form, { attr: { 'data-turbo': 'false'}}) }}
+        {% for child in form %}
+            {% for error in child.vars.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ child.vars.label }} :</strong> {{ error.message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.roles) }}
+        {{ form_row(form.plainPassword) }}
+
+        {% if user %}
+            <p><strong>Créé le :</strong>
+                {% if user.createdAt %}
+                    {{ user.createdAt|date('d/m/Y H:i') }}
+                {% else %}
+                    <em>—</em>
+                {% endif %}
+            </p>
+
+            <p><strong>Créé par :</strong>
+                {% if user.createdBy %}
+                    {{ user.createdBy.email }}
+                {% else %}
+                    <em>Auto-inscription</em>
+                {% endif %}
+            </p>
+
+            <p><strong>Modifié le :</strong>
+                {% if user.updatedAt %}
+                    {{ user.updatedAt|date('d/m/Y H:i') }}
+                {% else %}
+                    <em>—</em>
+                {% endif %}
+            </p>
+
+            <p><strong>Modifié par :</strong>
+                {% if user.updatedBy %}
+                    {{ user.updatedBy.email }}
+                {% else %}
+                    <em>—</em>
+                {% endif %}
+            </p>
+        {% endif %}
+
+        <button class="btn btn-primary">{{ user ? 'Modifier' : 'Ajouter' }}</button>
+    {{ form_end(form) }}
+
+    {% if user %}
+        <form method="post" action="{{ path('admin_user_delete', {id: user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+            <button class="btn btn-danger mt-3">Supprimer</button>
+        </form>
+    {% endif %}
+
+</div>
+{% endblock %}
