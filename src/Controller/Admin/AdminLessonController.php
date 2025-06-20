@@ -91,6 +91,8 @@ class AdminLessonController extends AbstractController
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
             $lesson->setContentVideoUrl($data->contentVideoUrl);
+            $lesson->setDescription($data->description);
+            $lesson->setImage($data->image);
             $lesson->setIsValidated(false);
             $lesson->setCursus($cursus);
             $lesson->setCreatedBy($this->getUser());
@@ -140,6 +142,44 @@ class AdminLessonController extends AbstractController
     }
 
     /**
+     * Fetches the Theme associated with a given Cursus ID.
+     *
+     * This endpoint is used in the admin interface to automatically
+     * select the correct Theme when a Cursus is chosen in the lesson form.
+     * It returns a JSON response with the Theme's ID and name.
+     *
+     * Example request: /admin/formation/theme-par-cursus?cursusId=5
+     *
+     * @param Request $request The current HTTP request containing the cursusId as query parameter
+     * @param CursusRepository $cursusRepo The repository used to retrieve the Cursus and its Theme
+     *
+     * @return JsonResponse A JSON response containing the Theme ID and name,
+     *                      or an error message with appropriate status code
+     */
+    #[Route('/admin/formation/theme-par-cursus', name: 'admin_theme_by_cursus', methods: ['GET'])]
+    public function getThemeByCursus(Request $request, CursusRepository $cursusRepo): JsonResponse
+    {
+        $cursusId = $request->query->get('cursusId');
+
+        if (!$cursusId) {
+            return new JsonResponse(['error' => 'Cursus ID missing'], 400);
+        }
+
+        $cursus = $cursusRepo->find($cursusId);
+        if (!$cursus || !$cursus->getTheme()) {
+            return new JsonResponse(['error' => 'Theme not found'], 404);
+        }
+
+        $theme = $cursus->getTheme();
+
+        return new JsonResponse([
+            'id' => $theme->getId(),
+            'name' => $theme->getName(),
+        ]);
+    }
+
+
+    /**
      * Displays and handles the form to edit an existing lesson.
      *
      * Allows changing the associated Theme and Cursus or creating new ones.
@@ -165,6 +205,8 @@ class AdminLessonController extends AbstractController
         $data->lessonPrice = $lesson->getPrice();
         $data->contentText = $lesson->getContentText();
         $data->contentVideoUrl = $lesson->getContentVideoUrl();
+        $data->description = $lesson->getDescription();
+        $data->image = $lesson->getImage();
         $data->selectedThemeId = $lesson->getCursus()?->getTheme();
         $data->selectedCursusId = $lesson->getCursus();
 
@@ -201,6 +243,8 @@ class AdminLessonController extends AbstractController
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
             $lesson->setContentVideoUrl($data->contentVideoUrl);
+            $lesson->setDescription($data->description);
+            $lesson->setImage($data->image);
             $lesson->setCursus($cursus);
             $lesson->setUpdatedBy($this->getUser());
             $lesson->setUpdatedAt(new \DateTimeImmutable());

@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\{
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Service\Admin\LessonFormSubscriber;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 
 
 /**
@@ -92,11 +93,19 @@ class AdminLessonType extends AbstractType
                 'label' => 'Prix de la formation',
                 'currency' => 'EUR',
             ])
-            ->add('contentText', TextareaType::class, [
+            ->add('contentText', CKEditorType::class, [
                 'label' => 'Contenu texte de la formation',
             ])
             ->add('contentVideoUrl', UrlType::class, [
                 'label' => 'Lien de la vidéo de formation',
+            ])
+            ->add('description', CKEditorType::class, [
+                'label' => 'Description de la formation',
+                'required' => false,
+            ])
+            ->add('image', TextType::class, [
+                'label' => 'Image (URL ou chemin)',
+                'required' => false,
             ]);
             
         $builder->addEventSubscriber($this->subscriber);

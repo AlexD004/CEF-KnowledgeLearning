@@ -97,4 +97,22 @@ class LessonCreationData
     #[Assert\NotBlank(message: 'Video URL is required.')]
     #[Assert\Url(message: 'Please provide a valid video URL.')]
     public ?string $contentVideoUrl = null;
+
+    /**
+     * Optional rich description for the lesson.
+     *
+     * @var string|null
+     */
+    public ?string $description = null;
+
+    /**
+     * Optional image path or URL.
+     *
+     * @var string|null
+     */
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Image path cannot exceed {{ limit }} characters.'
+    )]
+    public ?string $image = null;
 }

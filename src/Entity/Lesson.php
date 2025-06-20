@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableEntity;
 use App\Entity\Traits\BlameableEntity;
 use App\Repository\LessonRepository;
@@ -59,6 +60,26 @@ class Lesson
     #[ORM\ManyToOne(inversedBy: 'lessons')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cursus $cursus = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    /**
+     * Optional rich description of the lesson.
+     *
+     * This may contain formatted text (CKEditor).
+     *
+     * @var string|null
+     */
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    /**
+     * Image path or URL associated with the lesson.
+     *
+     * Used to visually represent the lesson in listings or detail pages.
+     *
+     * @var string|null
+     */
+    private ?string $image = null;
 
     /**
      * Indicates whether the lesson has been validated/completed.
@@ -183,6 +204,50 @@ class Lesson
     public function setCursus(?Cursus $cursus): static
     {
         $this->cursus = $cursus;
+        return $this;
+    }
+
+    /**
+     * Get the rich text description of the lesson.
+     *
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the rich text description of the lesson.
+     *
+     * @param string|null $description
+     * @return self
+     */
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get the lesson's image path or URL.
+     *
+     * @return string|null
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the lesson's image path or URL.
+     *
+     * @param string|null $image
+     * @return self
+     */
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 
