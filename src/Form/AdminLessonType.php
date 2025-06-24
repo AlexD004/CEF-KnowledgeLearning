@@ -8,12 +8,14 @@ use App\Form\Model\LessonCreationData;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\{
-    CheckboxType, MoneyType, TextareaType, TextType, UrlType
+    CheckboxType, MoneyType, TextType, UrlType
 };
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Service\Admin\LessonFormSubscriber;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 
 /**
@@ -48,25 +50,41 @@ class AdminLessonType extends AbstractType
         $builder
             // Theme section
             ->add('isNewTheme', CheckboxType::class, [
-                'label' => 'Souhaitez-vous créer un nouveau thème ?',
+                'label' => 'Cochez pour créer un nouveau thème',
                 'required' => false,
+                'label_attr' => ['class' => 'check-label'],
+                'row_attr' => ['class' => 'check-wrap'],
             ])
             ->add('selectedThemeId', EntityType::class, [
                 'class' => Theme::class,
                 'choice_label' => 'name',
                 'label' => 'Thème existant',
                 'required' => false,
-                'placeholder' => 'Choisir un thème',
+                'placeholder' => 'Choisir un thème', 
             ])
             ->add('newThemeName', TextType::class, [
                 'label' => 'Nom du nouveau thème',
                 'required' => false,
             ])
+            ->add('newThemeImage', FileType::class, [
+            'label' => 'Image du nouveau thème',
+            'required' => false,
+            'mapped' => true,
+            'constraints' => [
+                new File([
+                    'maxSize' => '2M',
+                    'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                    'mimeTypesMessage' => 'Format accepté : JPG, PNG, WebP',
+                ])
+            ],
+        ])
 
             // Cursus section
             ->add('isNewCursus', CheckboxType::class, [
-                'label' => 'Souhaitez-vous créer un nouveau cursus ?',
+                'label' => 'Cochez pour créer un nouveau cursus',
                 'required' => false,
+                'label_attr' => ['class' => 'check-label'],
+                'row_attr' => ['class' => 'check-wrap'],
             ])
             ->add('selectedCursusId', EntityType::class, [
                 'class' => Cursus::class,
@@ -79,10 +97,31 @@ class AdminLessonType extends AbstractType
                 'label' => 'Nom du nouveau cursus',
                 'required' => false,
             ])
+            ->add('newCursusImage', FileType::class, [
+                'label' => 'Image du nouveau cursus',
+                'required' => false,
+                'mapped' => true,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                        'mimeTypesMessage' => 'Format accepté : JPG, PNG, WebP',
+                    ])
+                ],
+            ])
             ->add('newCursusPrice', MoneyType::class, [
                 'label' => 'Prix du nouveau cursus',
+                'currency' => false,
+                'attr' => ['placeholder' => '0,00 €'],
+                'html5' => true,
+                'attr' => [
+                    'class' => 'money-input',
+                    'inputmode' => 'decimal',
+                    'step' => '0.01',
+                    'min' => '0'
+                ],
+                'row_attr' => ['class' => 'money-wrap'],
                 'required' => false,
-                'currency' => 'EUR',
             ])
 
             // Lesson details
@@ -91,7 +130,16 @@ class AdminLessonType extends AbstractType
             ])
             ->add('lessonPrice', MoneyType::class, [
                 'label' => 'Prix de la formation',
-                'currency' => 'EUR',
+                'currency' => false,
+                'attr' => ['placeholder' => '0,00 €'],
+                'html5' => true,
+                'attr' => [
+                    'class' => 'money-input',
+                    'inputmode' => 'decimal',
+                    'step' => '0.01', 
+                    'min' => '0'
+                ],
+                'row_attr' => ['class' => 'money-wrap']
             ])
             ->add('contentText', CKEditorType::class, [
                 'label' => 'Contenu texte de la formation',
@@ -103,9 +151,17 @@ class AdminLessonType extends AbstractType
                 'label' => 'Description de la formation',
                 'required' => false,
             ])
-            ->add('image', TextType::class, [
-                'label' => 'Image (URL ou chemin)',
+            ->add('image', FileType::class, [
+                'label' => 'Image de la formation',
                 'required' => false,
+                'mapped' => true,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                        'mimeTypesMessage' => 'Format accepté : JPG, PNG, WebP',
+                    ])
+                ],
             ]);
             
         $builder->addEventSubscriber($this->subscriber);

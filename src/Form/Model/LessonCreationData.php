@@ -5,6 +5,7 @@ namespace App\Form\Model;
 use App\Entity\Theme;
 use App\Entity\Cursus;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Data Transfer Object (DTO) used to handle lesson creation
@@ -33,8 +34,18 @@ class LessonCreationData
      * The name of the new Theme (if being created).
      *
      * @var string|null
+     * @Assert\NotBlank(message="Le nom du nouveau thème est requis", groups={"new_theme"})
      */
     public ?string $newThemeName = null;
+
+    /**
+     * Optional image file for the new Theme.
+     *
+     * This will be used only if a new Theme is created.
+     *
+     * @var UploadedFile|null
+     */
+    public ?UploadedFile $newThemeImage = null;
 
     /**
      * Whether a new Cursus is being created instead of selecting an existing one.
@@ -54,13 +65,25 @@ class LessonCreationData
      * The name of the new Cursus (if being created).
      *
      * @var string|null
+     * @Assert\NotBlank(message="Le nom du nouveau cursus est requis", groups={"new_cursus"})
      */
     public ?string $newCursusName = null;
+
+    /**
+     * Optional image file for the new Cursus.
+     *
+     * This will be used only if a new Cursus is created.
+     *
+     * @var UploadedFile|null
+     */
+    public ?UploadedFile $newCursusImage = null;
 
     /**
      * The price of the new Cursus (if being created).
      *
      * @var float|null
+     * @Assert\NotNull(message="Le prix du nouveau cursus est requis", groups={"new_cursus"})
+     * @Assert\PositiveOrZero(message="Le prix du cursus doit être positif ou nul", groups={"new_cursus"})
      */
     public ?float $newCursusPrice = null;
 
@@ -106,13 +129,10 @@ class LessonCreationData
     public ?string $description = null;
 
     /**
-     * Optional image path or URL.
+     * Optional uploaded image file for the lesson.
      *
-     * @var string|null
+     * @var UploadedFile|null
      */
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'Image path cannot exceed {{ limit }} characters.'
-    )]
-    public ?string $image = null;
+    public ?UploadedFile $image = null;
+    
 }

@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\ThemeRepository;
 use App\Repository\CursusRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\FormInterface;
 
 
 /**
@@ -45,7 +46,8 @@ class AdminLessonController extends AbstractController
      * Displays and handles the form to create a new lesson.
      *
      * Allows selecting an existing Theme or Cursus, or creating new ones,
-     * and associates them to the newly created Lesson.
+     * and associates them to the newly created Lesson. Also supports image
+     * upload for new Theme and Cursus entities.
      *
      * @param Request $request The current HTTP request
      * @param EntityManagerInterface $em The Doctrine entity manager
@@ -54,25 +56,54 @@ class AdminLessonController extends AbstractController
      * @return Response The form view or redirect upon success
      */
     #[Route('/admin/formation/creation', name: 'admin_lesson_create')]
-    public function create(Request $request, EntityManagerInterface $em, ThemeRepository $themeRepo, CursusRepository $cursusRepo): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $em,
+        ThemeRepository $themeRepo,
+        CursusRepository $cursusRepo
+    ): Response {
         $data = new LessonCreationData();
-        $form = $this->createForm(AdminLessonType::class, $data);
+
+        $form = $this->createForm(AdminLessonType::class, $data, [
+            'validation_groups' => function (FormInterface $form) {
+                $groups = ['Default'];
+                /** @var LessonCreationData $data */
+                $data = $form->getData();
+
+                if ($data->isNewTheme) {
+                    $groups[] = 'new_theme';
+                }
+
+                if ($data->isNewCursus) {
+                    $groups[] = 'new_cursus';
+                }
+
+                return $groups;
+            },
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle Theme
+            // Theme
             if ($data->isNewTheme && $data->newThemeName) {
                 $theme = new Theme();
                 $theme->setName($data->newThemeName);
                 $theme->setCreatedBy($this->getUser());
                 $theme->setUpdatedBy($this->getUser());
+
+                if ($data->newThemeImage) {
+                    $filename = uniqid('theme_') . '.' . $data->newThemeImage->guessExtension();
+                    $data->newThemeImage->move($this->getParameter('images_directory'), $filename);
+                    $theme->setImage($filename);
+                }
+
                 $em->persist($theme);
             } else {
                 $theme = $data->selectedThemeId;
             }
 
-            // Handle Cursus
+            // Cursus
             if ($data->isNewCursus && $data->newCursusName && $data->newCursusPrice !== null) {
                 $cursus = new Cursus();
                 $cursus->setName($data->newCursusName);
@@ -80,28 +111,40 @@ class AdminLessonController extends AbstractController
                 $cursus->setTheme($theme);
                 $cursus->setCreatedBy($this->getUser());
                 $cursus->setUpdatedBy($this->getUser());
+
+                if ($data->newCursusImage) {
+                    $filename = uniqid('cursus_') . '.' . $data->newCursusImage->guessExtension();
+                    $data->newCursusImage->move($this->getParameter('images_directory'), $filename);
+                    $cursus->setImage($filename);
+                }
+
                 $em->persist($cursus);
             } else {
                 $cursus = $data->selectedCursusId;
             }
 
-            // Handle Lesson
+            // Lesson
             $lesson = new Lesson();
             $lesson->setName($data->lessonName);
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
             $lesson->setContentVideoUrl($data->contentVideoUrl);
             $lesson->setDescription($data->description);
-            $lesson->setImage($data->image);
             $lesson->setIsValidated(false);
             $lesson->setCursus($cursus);
             $lesson->setCreatedBy($this->getUser());
             $lesson->setUpdatedBy($this->getUser());
 
+            if ($data->image) {
+                $filename = uniqid('lesson_') . '.' . $data->image->guessExtension();
+                $data->image->move($this->getParameter('images_directory'), $filename);
+                $lesson->setImage($filename);
+            }
+
             $em->persist($lesson);
             $em->flush();
 
-            $this->addFlash('success', 'Lesson successfully created.');
+            $this->addFlash('success', 'Formation créée avec succès.');
             return $this->redirectToRoute('admin_lesson_list');
         }
 
@@ -179,10 +222,11 @@ class AdminLessonController extends AbstractController
     }
 
 
-    /**
+   /**
      * Displays and handles the form to edit an existing lesson.
      *
      * Allows changing the associated Theme and Cursus or creating new ones.
+     * Also handles image upload for newly created Theme and Cursus during edit.
      *
      * @param Lesson $lesson The lesson to edit
      * @param Request $request The current HTTP request
@@ -199,33 +243,56 @@ class AdminLessonController extends AbstractController
         ThemeRepository $themeRepo,
         CursusRepository $cursusRepo
     ): Response {
-        // Hydrate DTO from the existing lesson
         $data = new LessonCreationData();
         $data->lessonName = $lesson->getName();
         $data->lessonPrice = $lesson->getPrice();
         $data->contentText = $lesson->getContentText();
         $data->contentVideoUrl = $lesson->getContentVideoUrl();
         $data->description = $lesson->getDescription();
-        $data->image = $lesson->getImage();
         $data->selectedThemeId = $lesson->getCursus()?->getTheme();
         $data->selectedCursusId = $lesson->getCursus();
+        $data->image = null; // on ne remplit pas l’image existante dans un champ file
 
-        $form = $this->createForm(AdminLessonType::class, $data);
+        $form = $this->createForm(AdminLessonType::class, $data, [
+            'validation_groups' => function (FormInterface $form) {
+                $groups = ['Default'];
+                /** @var LessonCreationData $data */
+                $data = $form->getData();
+
+                if ($data->isNewTheme) {
+                    $groups[] = 'new_theme';
+                }
+
+                if ($data->isNewCursus) {
+                    $groups[] = 'new_cursus';
+                }
+
+                return $groups;
+            },
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle Theme
+            // Theme
             if ($data->isNewTheme && $data->newThemeName) {
                 $theme = new Theme();
                 $theme->setName($data->newThemeName);
                 $theme->setCreatedBy($this->getUser());
                 $theme->setUpdatedBy($this->getUser());
+
+                if ($data->newThemeImage) {
+                    $filename = uniqid('theme_') . '.' . $data->newThemeImage->guessExtension();
+                    $data->newThemeImage->move($this->getParameter('images_directory'), $filename);
+                    $theme->setImage($filename);
+                }
+
                 $em->persist($theme);
             } else {
                 $theme = $data->selectedThemeId;
             }
 
-            // Handle Cursus
+            // Cursus
             if ($data->isNewCursus && $data->newCursusName && $data->newCursusPrice !== null) {
                 $cursus = new Cursus();
                 $cursus->setName($data->newCursusName);
@@ -233,25 +300,37 @@ class AdminLessonController extends AbstractController
                 $cursus->setTheme($theme);
                 $cursus->setCreatedBy($this->getUser());
                 $cursus->setUpdatedBy($this->getUser());
+
+                if ($data->newCursusImage) {
+                    $filename = uniqid('cursus_') . '.' . $data->newCursusImage->guessExtension();
+                    $data->newCursusImage->move($this->getParameter('images_directory'), $filename);
+                    $cursus->setImage($filename);
+                }
+
                 $em->persist($cursus);
             } else {
                 $cursus = $data->selectedCursusId;
             }
 
-            // Update lesson
+            // Lesson
             $lesson->setName($data->lessonName);
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
             $lesson->setContentVideoUrl($data->contentVideoUrl);
             $lesson->setDescription($data->description);
-            $lesson->setImage($data->image);
             $lesson->setCursus($cursus);
             $lesson->setUpdatedBy($this->getUser());
             $lesson->setUpdatedAt(new \DateTimeImmutable());
 
+            if ($data->image) {
+                $filename = uniqid('lesson_') . '.' . $data->image->guessExtension();
+                $data->image->move($this->getParameter('images_directory'), $filename);
+                $lesson->setImage($filename);
+            }
+
             $em->flush();
 
-            $this->addFlash('success', 'Lesson successfully updated.');
+            $this->addFlash('success', 'Formation mise à jour avec succès.');
             return $this->redirectToRoute('admin_lesson_list');
         }
 
@@ -260,6 +339,7 @@ class AdminLessonController extends AbstractController
             'lesson' => $lesson,
         ]);
     }
+
 
     /**
      * Deletes a lesson after validating the CSRF token.

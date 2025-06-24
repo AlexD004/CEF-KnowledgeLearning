@@ -36,31 +36,98 @@ a:hover {
     color:var(--color-primary);
 }
 
-/*
-** Header / nav
-*/
+/* === MENU MOBILE FIRST === */
+#menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: 1000;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    gap: 2rem;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+}
 
-header .wrapper {
+#menu.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#menu .auth,
+#menu .nav-links {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+#menu .auth{
+    padding-bottom: 4rem;
+    border-bottom: 1px solid var(--color-text);
+    gap: .5rem;
+    font-size: 1.3rem;
+}
+#menu .auth a{
+    font-size: .8rem;
+    color: var(--color-primary);
+}
+#menu .nav-links{
+    padding-top: 4rem;
+    gap: 1.5rem;
+}
+
+#menu a {
+    font-size: 1.3rem;
+    text-decoration: none;
+    color: #222;
+}
+#menu a.active {
+    color:var(--color-primary);
+}
+
+/* === BURGER & CLOSE === */
+.burger {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #333;
+}
+.close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    z-index: 2000;
+}
+.nomobile{
+    display: none;
+}
+
+/* === HEADER STRUCTURE === */
+.header-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem;
 }
-header .logo {
-    max-width: 100px;
-    height: auto;
+
+.logo {
+    max-height: 40px;
 }
-header nav{
-    display: inline-block;
-}
-header .menu a{
-    margin-right: 20px;
-}
-header .menu a.active{
-    color:var(--color-primary);
-}
-header .menu a:last-child{
-    margin-right: 0;
-}
+
 
 /*
 ** Content
@@ -80,9 +147,11 @@ header .menu a:last-child{
 form{
     width: 90%;
     margin: 0 auto;
+}
+form[name="registration_type_form"],
+form#userForm{
     max-width: 460px;
 }
-
 label {
     display: block;
     margin-top: 10px;
@@ -98,9 +167,41 @@ select {
 select {
     padding: 0 10px;
 }
+.check-wrap{
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+label.check-label{
+    display: inline;
+    margin: 0;
+}
+input[type="checkbox"]{
+    width: auto;
+    margin-right: 10px;
+}
+input[type="file"]{
+    height: auto;
+}
+.money-wrap {
+    position: relative;
+}
+.money-input {
+    padding-left: 25px;
+}
+.money-wrap::before{
+    content: '€';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    color: var(--color-text);
+    font-weight: bold;
+}
 form button,
 .btn{
     width: 100%;
+    max-width: 300px;
     height: 40px;
     margin-top: 40px;
     border-radius: 5px;
@@ -137,6 +238,12 @@ form ul{
     list-style: none;
     color: var(--color-accent);
 }
+form h2{
+    margin-top: 4rem;
+}
+form h2:first-child{
+    margin: 0;
+}
 
 /*
 ** Items Lists
@@ -149,6 +256,7 @@ form ul{
 .itemList li {
     border-bottom: 1px solid var(--color-text);
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
@@ -159,4 +267,61 @@ form ul{
 }
 .itemActions a{
     padding: 10px;
+}
+
+/* ========== TABLETTE (min-width: 768px) ========== */
+@media (min-width: 768px) {
+    .itemList li {
+    flex-direction: row;
+}
+}
+
+/* ========== DESKTOP (min-width: 1024px) ========== */
+@media (min-width: 1024px) {
+
+    .burger {
+        display: none;
+    }
+    .nomobile{
+        display: block;
+    }
+    #menu {
+        all: unset;
+        display: flex !important;
+    }
+
+    #menu .menu-content {
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row-reverse;
+        align-items: center;
+        gap: 3rem;
+        width: 100%;
+    }
+
+    #menu .auth,
+    #menu .nav-links {
+        flex-direction: row;
+        gap: 1.5rem;
+        margin: 0;
+    }
+
+    #menu .auth {
+        padding-bottom: 0;
+        border-bottom: none;
+        gap: 1.5rem;
+        font-size: 1rem;
+    }
+    #menu .nav-links {
+        padding-top: 0;
+    }
+
+    #menu a {
+        font-size: 1rem;
+        color: var(--color-text);
+    }
+    .close-btn {
+        display: none;
+    }
+
 }

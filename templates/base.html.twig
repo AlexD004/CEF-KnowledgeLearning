@@ -4,86 +4,56 @@
         <meta charset="UTF-8">
         <title>Knowledge Learning{% block title %}{% endblock %}</title>
         <link rel="icon" type="image/png" href="{{ asset('images/favicon-knowledge.png') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
     <body>
     <header>
-        <div class="wrapper">
+        <div class="wrapper header-wrapper">
+
             <a href="/"><img class="logo" src="{{ asset('images/logo-knowledge.png') }}" alt="Knowledge"></a>
+            <button class="burger" id="burgerBtn" aria-label="Menu mobile">
+                &#9776;
+            </button>
             
-            {% if app.user %}
-                <nav class="menu">
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a
-                            class="
-                                listUsers
-                                {% if app.request.get('_route') == 'admin_user_list' %}active{% endif %}
-                            "
-                            href="{{ path('admin_user_list') }}"
-                        >Utilisateurs</a>
-                        <a
-                            class="
-                                listFormations
-                                {% if app.request.get('_route') == 'admin_lesson_list' %}active{% endif %}
-                            "
-                            href="{{ path('admin_lesson_list') }}"
-                        >Formations</a>
-                        <a
-                            class="
-                                listOrders
-                                {% if app.request.get('_route') == 'admin_orders' %}active{% endif %}
-                            "
-                            href="{{ path('admin_orders') }}"
-                        >Historique</a>
-                    {% elseif is_granted('ROLE_CLIENT') %}
-                        <a 
-                            class="
-                                userInfos
-                                {% if app.request.get('_route') == 'client_informations' %}active{% endif %}
-                            "
-                            href="{{ path('client_informations') }}"
-                        >Informations</a>
-                        <a
-                            class="
-                                userFormations
-                                {% if app.request.get('_route') == 'client_formations' %}active{% endif %}
-                            "
-                            href="{{ path('client_formations') }}"
-                        >Formations</a>
-                        <a
-                            class="
-                                userCertificates
-                                {% if app.request.get('_route') == 'client_certificates' %}active{% endif %}
-                            "
-                            href="{{ path('client_certificates') }}"
-                        >Certificats</a>
-                        <a
-                            class="
-                                userOrders
-                                {% if app.request.get('_route') == 'client_orders' %}active{% endif %}
-                            "
-                            href="{{ path('client_orders') }}"
-                        >Achats</a>
+            <nav id="menu" class="menu">
+                <div class="menu-content">
+                    <button class="close-btn" aria-label="Fermer le menu">✕</button>
+                    {% if app.user %}
+                        <div class="auth">
+                            {{ app.user.firstName }} {{ app.user.lastName }}
+                            <a href="{{ path('logout') }}">Se déconnecter</a>
+                        </div>
+                        <div class="nomobile">|</div>
+                        <div class="nav-links">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class=" listUsers {% if app.request.get('_route') == 'admin_user_list' %}active{% endif %} " href="{{ path('admin_user_list') }}">Utilisateurs</a>
+                                <a class=" listFormations {% if app.request.get('_route') == 'admin_lesson_list' %}active{% endif %} " href="{{ path('admin_lesson_list') }}">Formations</a>
+                                <a class=" listOrders {% if app.request.get('_route') == 'admin_orders' %}active{% endif %} " href="{{ path('admin_orders') }}">Historique</a>
+                            {% elseif is_granted('ROLE_CLIENT') %}
+                                <a  class=" userInfos {% if app.request.get('_route') == 'client_informations' %}active{% endif %} " href="{{ path('client_informations') }}">Informations</a>
+                                <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Formations</a>
+                                <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Certificats</a>
+                                <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Achats</a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="auth">
+                            <a href="{{ path('login') }}">Se connecter</a>
+                            <a href="{{ path('register') }}">Créer un compte</a>
+                        </div>
                     {% endif %}
-                </nav>
-            {% endif %}
-            <nav class="auth">
-                {% if app.user %}
-                    {{ app.user.firstName }} {{ app.user.lastName }} |
-                    <a href="{{ path('logout') }}">Se déconnecter</a>
-                {% else %}
-                    <a href="{{ path('login') }}">Se connecter</a> |
-                    <a href="{{ path('register') }}">Créer un compte</a>
-                {% endif %}
+                </div>
             </nav>
         </div>
     </header>
         {% block body %}{% endblock %}
+
+        {% block javascripts %}
+            <script src="{{ asset('js/menu.js') }}"></script>
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
     </body>
 </html>

@@ -4,14 +4,14 @@
 
 {% block body %}
 <div class="wrapper content">
-    <form method="post" data-turbo="false">
+
+    <h1>Connectez vous</h1>
+    <form id="userForm" method="post" data-turbo="false">
         {% if error %}
             <div class="alert alert-danger">
                 {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
         {% endif %}
-
-        <h1>Connectez vous</h1>
 
         <label for="email">Email</label>
         <input

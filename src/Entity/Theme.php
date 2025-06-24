@@ -37,6 +37,14 @@ class Theme
     private ?string $name = null;
 
     /**
+     * The image filename associated with the theme.
+     *
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $image = null;
+
+    /**
      * @var Collection<int, Cursus> The cursus associated with this theme.
      */
     #[ORM\OneToMany(targetEntity: Cursus::class, mappedBy: 'theme')]
@@ -79,6 +87,28 @@ class Theme
     public function setName(string $name): static
     {
         $this->name = $name;
+        return $this;
+    }
+
+     /**
+     * Get the image filename.
+     *
+     * @return string|null
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the image filename.
+     *
+     * @param string|null $image
+     * @return self
+     */
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 

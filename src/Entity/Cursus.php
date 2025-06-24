@@ -36,6 +36,14 @@ class Cursus
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+     /**
+     * The image filename associated with the cursus.
+     *
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $image = null;
+
     /**
      * The price of the cursus in euros.
      */
@@ -92,6 +100,28 @@ class Cursus
     public function setName(string $name): static
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get the image filename.
+     *
+     * @return string|null
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the image filename.
+     *
+     * @param string|null $image
+     * @return self
+     */
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 
