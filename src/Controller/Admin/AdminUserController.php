@@ -43,7 +43,7 @@ class AdminUserController extends AbstractController
      *
      * @return Response The rendered user creation form or redirect
      */
-    #[Route('/admin/utilisateur/nouveau', name: 'admin_user_create')]
+    #[Route('/admin/utilisateur/creation', name: 'admin_user_create')]
     public function createUser(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
