@@ -203,7 +203,7 @@ form button,
     width: 100%;
     max-width: 500px;
     height: 40px;
-    margin-top: 40px;
+    margin: 40px auto 0;
     border-radius: 5px;
     border: none;
     background: var(--color-primary);
@@ -211,6 +211,9 @@ form button,
     cursor: pointer;
     font-weight: bold;
     transition: .5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 form button:hover,
 .btn:hover{
@@ -252,8 +255,30 @@ form h2:first-child{
 ** Items Lists
 */
 
+.listActions,
+.filters{
+    display: flex;
+    flex-direction: column;
+}
+.filters{
+    padding: 25px 0;
+    margin: 25px auto;
+    border-top: 1px solid var(--color-text);
+    border-bottom: 1px solid var(--color-text);
+}
+.filters .btn {
+    background-color: var(--color-text);
+    font-family: 'Comic Sans MS', serif;
+    font-size: .8rem;
+}
+.filters a.btn {
+    margin-top: 10px;
+}
+.filters label {
+    margin-top: 10px;
+}
+
 .itemList {
-    margin-top: 20px;
     list-style: none;
 }
 .itemList li {
@@ -274,9 +299,42 @@ form h2:first-child{
 
 /* ========== TABLETTE (min-width: 768px) ========== */
 @media (min-width: 768px) {
+    .itemList {
+        margin-top: 25px;
+    }
     .itemList li {
-    flex-direction: row;
-}
+        flex-direction: row;
+    }
+    .listActions, .filters {
+        flex-direction: row;
+    }
+    .listActions a.btn {
+        width: 25%;
+        margin: 0;
+    }
+     .listActions {
+        align-items: flex-end;
+        justify-content: space-between;
+     }
+    .filters {
+        border: none;
+        padding: 0;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin: 0;
+        gap: .5rem;
+    }
+    .groupLabelSelect,
+    .filters .btn {
+        width: 20%;
+        margin: 0;
+    }
+    .filters .btn{
+        max-width:90px;
+    }
+    .groupLabelSelect label{
+        margin: 0;
+    }
 }
 
 /* ========== DESKTOP (min-width: 1024px) ========== */
