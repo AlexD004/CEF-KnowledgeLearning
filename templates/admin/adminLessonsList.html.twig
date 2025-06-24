@@ -36,7 +36,7 @@
                     </small>
                 </div>
                 <div class="itemActions">
-                    <a href="{{ path('admin_lesson_edit', { id: lesson.id }) }}">Modifier</a> |
+                    <a href="{{ path('admin_lesson_edit', { id: lesson.id }) }}" data-turbo="false">Modifier</a> |
                     <form method="post" action="{{ path('admin_lesson_delete', { id: lesson.id }) }}"
                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_lesson_' ~ lesson.id) }}">
