@@ -40,4 +40,29 @@ class LessonRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    public function findByFilters(?string $themeId, ?string $cursusId, ?string $maxPrice): array
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->join('l.cursus', 'c')
+            ->join('c.theme', 't')
+            ->addSelect('c', 't');
+
+        if ($themeId) {
+            $qb->andWhere('t.id = :themeId')->setParameter('themeId', $themeId);
+        }
+
+        if ($cursusId) {
+            $qb->andWhere('c.id = :cursusId')->setParameter('cursusId', $cursusId);
+        }
+
+        if ($maxPrice !== null && is_numeric($maxPrice)) {
+            $qb->andWhere('l.price <= :maxPrice')->setParameter('maxPrice', $maxPrice);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 }
+

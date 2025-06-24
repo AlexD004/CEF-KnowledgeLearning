@@ -33,12 +33,24 @@ class AdminLessonController extends AbstractController
      * @return Response The rendered lesson list view
      */
     #[Route('/admin/formation', name: 'admin_lesson_list')]
-    public function list(LessonRepository $lessonRepository): Response
-    {
-        $lessons = $lessonRepository->findAll();
+    public function list(
+        LessonRepository $lessonRepository,
+        ThemeRepository $themeRepository,
+        CursusRepository $cursusRepository,
+        Request $request
+    ): Response {
+        $themeId = $request->query->get('theme');
+        $cursusId = $request->query->get('cursus');
+        $maxPrice = $request->query->get('price');
+
+        $lessons = $lessonRepository->findByFilters($themeId, $cursusId, $maxPrice);
+        $themes = $themeRepository->findAll();
+        $cursuses = $cursusRepository->findAll();
 
         return $this->render('admin/adminLessonsList.html.twig', [
             'lessons' => $lessons,
+            'themes' => $themes,
+            'cursuses' => $cursuses,
         ]);
     }
 
