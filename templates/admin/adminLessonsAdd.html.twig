@@ -16,7 +16,16 @@
     </div>
     <div id="new-theme-fields" style="display: none;">
         {{ form_row(form.newThemeName) }}
-        {{ form_row(form.newThemeImage) }}
+        <div class="form-group">
+            {{ form_label(form.newThemeImage) }}
+            {% if theme and theme.image %}
+                <div class="preview">
+                    <img id="preview-theme" src="{{ asset('uploads/images/' ~ theme.image) }}" alt="Aperçu image" height="100">
+                </div>
+            {% endif %}
+            {{ form_widget(form.newThemeImage, {'attr': {'onchange': 'previewImage(this, "preview-theme")'}}) }}
+            {{ form_errors(form.newThemeImage) }}
+        </div>
     </div>
 
     {# === Cursus Selection === #}
@@ -27,7 +36,16 @@
     </div>
     <div id="new-cursus-fields" style="display: none;">
         {{ form_row(form.newCursusName) }}
-        {{ form_row(form.newCursusImage) }}
+        <div class="form-group">
+            {{ form_label(form.newCursusImage) }}
+            {% if cursus and cursus.image %}
+                <div class="preview">
+                    <img id="preview-cursus" src="{{ asset('uploads/images/' ~ cursus.image) }}" alt="Aperçu image" height="100">
+                </div>
+            {% endif %}
+            {{ form_widget(form.newCursusImage, {'attr': {'onchange': 'previewImage(this, "preview-cursus")'}}) }}
+            {{ form_errors(form.newCursusImage) }}
+        </div>
         {{ form_row(form.newCursusPrice) }}
     </div>
 
@@ -38,11 +56,21 @@
     {{ form_row(form.contentText) }}
     {{ form_row(form.contentVideoUrl) }}
     {{ form_row(form.description) }}
-    {{ form_row(form.image) }}
+    <div class="form-group">
+        {{ form_label(form.image) }}
+        {% if lesson and lesson.image %}
+            <div class="preview">
+                <img id="preview-lesson" src="{{ asset('uploads/images/' ~ lesson.image) }}" alt="Aperçu image" height="100">
+            </div>
+        {% endif %}
+        {{ form_widget(form.image, {'attr': {'onchange': 'previewImage(this, "preview-lesson")'}}) }}
+        {{ form_errors(form.image) }}
+    </div>
+
 
     {# === Metadata (if editing) === #}
     {% if lesson %}
-        <div class="mt-4">
+        <div class="responsabilities">
             <p><strong>Créée le :</strong>
                 {{ lesson.createdAt ? lesson.createdAt|date('d/m/Y H:i') : '—' }}
             </p>
@@ -138,6 +166,25 @@
             });
         }
     });
+
+
+    function previewImage(input, previewId) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let img = document.getElementById(previewId);
+                if (!img) {
+                    img = document.createElement('img');
+                    img.id = previewId;
+                    img.height = 100;
+                    input.closest('.form-group').insertBefore(img, input);
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
 </script>
 
 {% endblock %}

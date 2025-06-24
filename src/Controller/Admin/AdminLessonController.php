@@ -151,6 +151,8 @@ class AdminLessonController extends AbstractController
         return $this->render('admin/adminLessonsAdd.html.twig', [
             'form' => $form->createView(),
             'lesson' => null,
+            'theme' => null,
+            'cursus' => null,
         ]);
     }
 
@@ -333,10 +335,15 @@ class AdminLessonController extends AbstractController
             $this->addFlash('success', 'Formation mise à jour avec succès.');
             return $this->redirectToRoute('admin_lesson_list');
         }
+        
+        $theme = $lesson->getCursus()?->getTheme();
+        $cursus = $lesson->getCursus();
 
         return $this->render('admin/adminLessonsAdd.html.twig', [
             'form' => $form->createView(),
             'lesson' => $lesson,
+            'theme' => $theme,
+            'cursus' => $cursus,
         ]);
     }
 

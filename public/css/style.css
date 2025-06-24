@@ -16,7 +16,7 @@
 body {
     font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
     font-size: 16px;
-    background-color: var(--color-bg);
+    background-color: #fff;
     color: var(--color-text);
     line-height: 1.6;
     padding: 20px;
@@ -154,7 +154,7 @@ form#userForm{
 }
 label {
     display: block;
-    margin-top: 10px;
+    margin-top: 50px;
 }
 input,
 select {
@@ -201,7 +201,7 @@ input[type="file"]{
 form button,
 .btn{
     width: 100%;
-    max-width: 300px;
+    max-width: 500px;
     height: 40px;
     margin-top: 40px;
     border-radius: 5px;
@@ -243,6 +243,9 @@ form h2{
 }
 form h2:first-child{
     margin: 0;
+}
+.responsabilities{
+    margin-top: 50px;
 }
 
 /*
