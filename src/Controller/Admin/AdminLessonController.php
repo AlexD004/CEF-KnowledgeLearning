@@ -181,11 +181,9 @@ class AdminLessonController extends AbstractController
     {
         $themeId = $request->query->get('themeId');
 
-        if (!$themeId) {
-            return new JsonResponse(['error' => 'Theme ID missing'], 400);
-        }
-
-        $cursusList = $cursusRepo->findBy(['theme' => $themeId]);
+        $cursusList = $themeId
+            ? $cursusRepo->findBy(['theme' => $themeId])
+            : $cursusRepo->findAll();
 
         $result = [];
         foreach ($cursusList as $cursus) {
