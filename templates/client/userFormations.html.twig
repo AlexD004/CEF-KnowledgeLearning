@@ -4,6 +4,40 @@
 
 {% block body %}
 <div class="wrapper content">
-    <h1>Client : Formations</h1>
+    <h1>Mes formations</h1>
+
+    {% if lessonsGroupedByCursus is not empty %}
+        {% for cursusData in lessonsGroupedByCursus %}
+            <div class="cursus-block">
+                <h2>{{ cursusData.cursus.name }}</h2>
+
+                <ul class="lesson-list">
+                    {% set allLessons = cursusData.cursus.lessons %}
+                    {# On extrait les IDs des leçons achetées #}
+                    {% set purchasedLessonIds = [] %}
+                    {% for l in cursusData.purchasedLessons %}
+                        {% set purchasedLessonIds = purchasedLessonIds|merge([l.id]) %}
+                    {% endfor %}
+
+                    {% for lesson in allLessons %}
+                        {% set isPurchased = lesson.id in purchasedLessonIds %}
+                        <li class="lesson-item {% if not isPurchased %}locked{% endif %}">
+                            {% if isPurchased %}
+                                <a href="{{ path('client_lesson_show', { id: lesson.id }) }}">
+                                    {{ lesson.name }}
+                                </a>
+                            {% else %}
+                                <span class="locked-lesson">
+                                    🔒 {{ lesson.name }}
+                                </span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Vous n'avez pas encore acheté de formation.</p>
+    {% endif %}
 </div>
 {% endblock %}

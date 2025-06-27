@@ -1,9 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} - Bienvenue !{% endblock %}
+{% block title %} - Accueil{% endblock %}
 
 {% block body %}
 <div class="wrapper content">
-    <h1>Bienvenue sur la plateforme de formation</h1>
+    <h1>Nos Thèmes</h1>
+
+    <div class="theme-list">
+        {% for theme in themes %}
+            <a href="{{ path('theme_show', { id: theme.id }) }}">
+                <div class="theme-card">
+                    {% if theme.image %}
+                        <img src="{{ asset('uploads/images/' ~ theme.image) }}" alt="{{ theme.name }}" height="100">
+                    {% endif %}
+                    <h3>{{ theme.name }}</h3>
+                </div>
+            </a>
+        {% else %}
+            <p>Aucun thème pour le moment.</p>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -10,50 +10,62 @@
         {% endblock %}
     </head>
     <body>
-    <header>
-        <div class="wrapper header-wrapper">
+        <header>
+            <div class="wrapper header-wrapper">
 
-            <a href="/"><img class="logo" src="{{ asset('images/logo-knowledge.png') }}" alt="Knowledge"></a>
-            <button class="burger" id="burgerBtn" aria-label="Menu mobile">
-                &#9776;
-            </button>
-            
-            <nav id="menu" class="menu">
-                <div class="menu-content">
-                    <button class="close-btn" aria-label="Fermer le menu">✕</button>
-                    {% if app.user %}
-                        <div class="auth">
-                            {{ app.user.firstName }} {{ app.user.lastName }}
-                            <a href="{{ path('logout') }}">Se déconnecter</a>
-                        </div>
-                        <div class="nomobile">|</div>
-                        <div class="nav-links">
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a class=" listUsers {% if app.request.get('_route') == 'admin_user_list' %}active{% endif %} " href="{{ path('admin_user_list') }}">Utilisateurs</a>
-                                <a class=" listFormations {% if app.request.get('_route') == 'admin_lesson_list' %}active{% endif %} " href="{{ path('admin_lesson_list') }}">Formations</a>
-                                <a class=" listOrders {% if app.request.get('_route') == 'admin_orders' %}active{% endif %} " href="{{ path('admin_orders') }}">Historique</a>
-                            {% elseif is_granted('ROLE_CLIENT') %}
-                                <a  class=" userInfos {% if app.request.get('_route') == 'client_informations' %}active{% endif %} " href="{{ path('client_informations') }}">Informations</a>
-                                <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Formations</a>
-                                <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Certificats</a>
-                                <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Achats</a>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="auth">
-                            <a href="{{ path('login') }}">Se connecter</a>
-                            <a href="{{ path('register') }}">Créer un compte</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </nav>
-        </div>
-    </header>
+                <a href="/"><img class="logo" src="{{ asset('images/logo-knowledge.png') }}" alt="Knowledge"></a>
+                <button class="burger" id="burgerBtn" aria-label="Menu mobile">
+                    &#9776;
+                </button>
+                
+                <nav id="menu" class="menu">
+                    <div class="menu-content">
+                        <button class="close-btn" aria-label="Fermer le menu">✕</button>
+                        {% if app.user %}
+                            <div class="auth">
+                                {{ app.user.firstName }} {{ app.user.lastName }}
+                                <a href="{{ path('logout') }}">Se déconnecter</a>
+                            </div>
+                            <div class="nomobile">|</div>
+                            <div class="nav-links">
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class=" listUsers {% if app.request.get('_route') == 'admin_user_list' %}active{% endif %} " href="{{ path('admin_user_list') }}">Utilisateurs</a>
+                                    <a class=" listFormations {% if app.request.get('_route') == 'admin_lesson_list' %}active{% endif %} " href="{{ path('admin_lesson_list') }}">Formations</a>
+                                    <a class=" listOrders {% if app.request.get('_route') == 'admin_orders' %}active{% endif %} " href="{{ path('admin_orders') }}">Historique</a>
+                                {% elseif is_granted('ROLE_CLIENT') %}
+                                    <a  class=" userInfos {% if app.request.get('_route') == 'client_informations' %}active{% endif %} " href="{{ path('client_informations') }}">Informations</a>
+                                    <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Formations</a>
+                                    <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Certificats</a>
+                                    <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Achats</a>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="auth">
+                                <a href="{{ path('login') }}">Se connecter</a>
+                                <a href="{{ path('register') }}">Créer un compte</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
+        </header>
+
         {% block body %}{% endblock %}
 
         {% block javascripts %}
             <script src="{{ asset('js/menu.js') }}"></script>
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+    
+        <footer class="footer">
+            <div class="wrapper">
+                <p>&copy; {{ "now"|date("Y") }} Knowledge Learning - Tous droits réservés.</p>
+                <nav>
+                    <a href="{{ path('homepage') }}">Accueil</a> |
+                    <a href="#">Contact</a> |
+                    <a href="#">CGV</a>
+                </nav>
+            </div>
+        </footer>
     </body>
 </html>

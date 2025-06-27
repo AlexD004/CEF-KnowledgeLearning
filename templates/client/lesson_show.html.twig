@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} - {{ lesson.name }}{% endblock %}
+
+{% block body %}
+<div class="wrapper content">
+    <h1>{{ lesson.name }}</h1>
+
+    {# Affichage de l'image de la lesson #}
+    {% if lesson.image %}
+        <div class="lesson-image mb-3">
+            <img src="{{ asset('uploads/images/' ~ lesson.image) }}" alt="Image de la formation {{ lesson.name }}" style="max-width: 100%; height: auto;">
+        </div>
+    {% endif %}
+
+    {# Description (si existante) #}
+    {% if lesson.description %}
+        <div class="lesson-description">
+            {{ lesson.description|raw }}
+        </div>
+    {% endif %}
+
+    {# Contenu texte (si existant) #}
+    {% if lesson.contentText %}
+        <div class="lesson-text mt-3">
+            {{ lesson.contentText|raw }}
+        </div>
+    {% endif %}
+
+    {# Vidéo (uploadée OU par URL) #}
+    {% if lesson.videoFilename %}
+        <div class="lesson-video mt-4">
+            <video width="720" height="400" controls>
+                <source src="{{ asset('uploads/videos/' ~ lesson.videoFilename) }}" type="video/mp4">
+                Votre navigateur ne supporte pas la lecture de vidéo HTML5.
+            </video>
+        </div>
+    {% elseif lesson.contentVideoUrl %}
+        <div class="lesson-video mt-4">
+            <iframe
+                width="720"
+                height="405"
+                src="{{ lesson.contentVideoUrl }}"
+                title="Lesson video"
+                frameborder="0"
+                allowfullscreen>
+            </iframe>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
