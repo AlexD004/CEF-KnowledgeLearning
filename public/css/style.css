@@ -477,8 +477,33 @@ form h2:first-child{
 .lesson-text{
     margin-top: 50px;
 }
-.lesson-text p{
+.lesson-text p,
+.lesson-excerpt-content p{
     margin: 20px 0;
+}
+
+.lesson-excerpt{
+    display: flex;
+    flex-direction: column;
+}
+.lesson-excerpt .price{
+    background: var(--color-secondary);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    color: var(--color-bg);
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    margin: 0 auto;
+}
+.lesson-excerpt .btn{
+    margin-top: 5px;
+}
+.lesson-price-cart {
+    margin-top: 50px;
 }
 
 /* ========== TABLETTE (min-width: 768px) ========== */
@@ -545,9 +570,6 @@ form h2:first-child{
     .cursus-price {
         font-size: 1.3rem;
         width: 100px;
-    }
-    .lesson-infos {
-        flex-direction: row;
     }
 }
 

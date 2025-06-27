@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 use App\Entity\User;
 use App\Entity\Theme;
+use App\Entity\Lesson;
 use App\Form\RegistrationTypeForm;
 use App\Service\User\UserRegistrationService;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,11 +56,11 @@ final class PublicController extends AbstractController
         ]);
     }
 
-    #[Route('/theme/extrait/{id}', name: 'excerpt_show', requirements: ['id' => '\d+'])]
-    public function showExcerpt(Theme $theme): Response
+    #[Route('/formation/{id}', name: 'excerpt_show', requirements: ['id' => '\d+'])]
+    public function showExcerpt(Lesson $lesson): Response
     {
         return $this->render('public/excerpt_show.html.twig', [
-            'theme' => $theme,
+            'lesson' => $lesson,
         ]);
     }
 }
