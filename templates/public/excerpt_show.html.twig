@@ -23,7 +23,7 @@
     </div>
     <div class="lesson-price-cart">
         <strong class="price">{{ lesson.price }} €</strong>
-        <a href="#" class="btn btn-primary">Ajouter au panier</a>
+        <a href="{{ path('cart_add', {'type': 'lesson' , 'lessonId': lesson.id}) }}" class="btn btn-primary">Ajouter au panier</a>
     </div>
 
 </div>

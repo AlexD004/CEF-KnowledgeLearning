@@ -33,10 +33,10 @@
                                     <a class=" listFormations {% if app.request.get('_route') == 'admin_lesson_list' %}active{% endif %} " href="{{ path('admin_lesson_list') }}">Formations</a>
                                     <a class=" listOrders {% if app.request.get('_route') == 'admin_orders' %}active{% endif %} " href="{{ path('admin_orders') }}">Historique</a>
                                 {% elseif is_granted('ROLE_CLIENT') %}
-                                    <a  class=" userInfos {% if app.request.get('_route') == 'client_informations' %}active{% endif %} " href="{{ path('client_informations') }}">Informations</a>
-                                    <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Formations</a>
-                                    <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Certificats</a>
-                                    <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Achats</a>
+                                    <a  class=" userInfos {% if app.request.get('_route') == 'client_informations' %}active{% endif %} " href="{{ path('client_informations') }}">Mes informations</a>
+                                    <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Mes formations</a>
+                                    <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Mes certificats</a>
+                                    <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Mes achats</a>
                                 {% endif %}
                             </div>
                         {% else %}

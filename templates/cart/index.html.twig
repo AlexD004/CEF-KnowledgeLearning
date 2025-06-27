@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="wrapper content">
+    <h1>Mon panier</h1>
+
+    {% for item in items %}
+        {% if item.type == 'lesson' %}
+            <div>
+                <strong>{{ item.label }}</strong> — {{ item.price|number_format(2, '.', ' ') }} € 
+                <a href="{{ path('cart_remove', {'id': item.id}) }}">❌</a>
+            </div>
+        {% elseif item.type == 'cursus' %}
+            <div>
+                <strong>{{ item.label }}</strong><br>
+                <span style="text-decoration: line-through;">
+                    {{ item.cumulative|number_format(2, '.', ' ') }} €
+                </span>
+                <span>
+                    {{ item.price|number_format(2, '.', ' ') }} €
+                </span>
+                <ul>
+                    {% for lesson in item.lessons %}
+                        <li>
+                            {{ lesson.name }} — {{ lesson.price|number_format(2, '.', ' ') }} €
+                            <a href="{{ path('cart_remove_lesson_from_cursus', {'lessonId': lesson.id}) }}">❌</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <hr>
+    <p>Total HT : {{ totalHT|number_format(2, '.', ' ') }} €</p>
+    <p>TVA ({{ TVA * 100 }}%) : {{ (totalHT * TVA)|number_format(2, '.', ' ') }} €</p>
+    <p><strong>Total TTC : {{ totalTTC|number_format(2, '.', ' ') }} €</strong></p>
+
+</div>
+{% endblock %}

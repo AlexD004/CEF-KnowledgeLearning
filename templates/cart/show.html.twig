@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon panier{% endblock %}
+
+{% block body %}
+    <div class="wrapper content cart">
+        <h1>Mon panier</h1>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% for item in items %}
+            {% if item.type == 'lesson' %}
+                <div class="cart-item">
+                    <div class="lesson-in-cart">
+                        <span>
+                            <strong>{{ item.label }}</strong>
+                            <form method="post" action="{{ path('cart_remove', {'id': item.id}) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('remove_cartitem_' ~ item.id) }}">
+                                <button type="submit" class="btn-link">X</button>
+                            </form>
+                        </span>
+                        <span class="truePrice">{{ item.price|number_format(2, '.', ' ') }} € TTC</span>
+                    </div>
+                </div>
+            {% elseif item.type == 'cursus' %}
+                <div class="cart-item">
+                    <div class="cursus-in-cart">
+                        <strong>{{ item.label }}</strong>
+                        <div class="cursus-in-cart-price">
+                            <span style="text-decoration: line-through;">
+                                {{ item.cumulative|number_format(2, '.', ' ') }} € TTC
+                            </span>
+                            <span class="truePrice">
+                                {{ item.price|number_format(2, '.', ' ') }} € TTC
+                            </span>
+                        </div>
+                    </div>
+                    <ul>
+                        {% for lesson in item.lessons %}
+                            <li>
+                                {{ lesson.name }} -  <span class="lessonPrice">{{ lesson.price|number_format(2, '.', ' ') }} € TTC</span>
+                                <form method="post" action="{{ path('cart_remove_lesson_from_cursus', {'lessonId': lesson.id}) }}" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('remove_lesson_' ~ lesson.id) }}">
+                                    <button type="submit" class="btn-link">X</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% else %}
+            <p>Votre panier est vide.</p>
+        {% endfor %}
+
+        <div class="totalCart">
+            <p>Total HT : {{ totalHT|number_format(2, '.', ' ') }} €</p>
+            <p>TVA ({{ TVA * 100 }}%) : {{ (totalHT * TVA)|number_format(2, '.', ' ') }} €</p>
+            <p><strong>Total TTC : {{ totalTTC|number_format(2, '.', ' ') }} €</strong></p>
+        </div>
+    </div>
+{% endblock %}

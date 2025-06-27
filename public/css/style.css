@@ -152,6 +152,23 @@ a:hover {
     margin-bottom: 20px;
 }
 
+/* === Register & Log forms === */
+
+.registerLog{
+    text-align: center;
+}
+.registerLog a{
+    display: block;
+    margin-top: 40px;
+}
+.registerLog form label{
+    margin-top: 10px;
+    text-align: left;
+}
+.registerLog form button{
+    margin-top: 30px;
+}
+
 /* === FORMS === */
 
 form{
@@ -234,6 +251,25 @@ form button:hover,
 .btn{
     padding: 10px;
 }
+.cart .btn,
+.cart form button{
+    width: auto;
+    height: auto;
+    margin: 0 0 0 10px;
+    border: none;
+    background: none;
+    color: var(--color-accent);
+    cursor: pointer;
+    transition: .5s ease;
+    display: inline;
+    font-size: 1rem;
+    font-family: 'Comic Sans MS';
+    font-weight: bold;
+}
+.cart .btn:hover,
+.cart form button:hover{
+    color: var(--color-primary);
+}
 form button.btn-danger {
     margin-top: 0;
     background: none;
@@ -246,6 +282,13 @@ form button.btn-danger:hover {
 }
 .alert{
     color: var(--color-accent);
+}
+.cart .alert {
+    color: var(--color-bg);
+    margin: 25px 0;
+    text-align: center;
+    border-radius: 10px;
+    background: var(--color-primary);
 }
 form ul{
     list-style: none;
@@ -506,6 +549,44 @@ form h2:first-child{
     margin-top: 50px;
 }
 
+/* === Cart === */
+
+.cart-item {
+    background: var(--color-bg);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+.cart-item ul {
+    list-style: none;
+}
+.cursus-in-cart,
+.lesson-in-cart {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.cursus-in-cart-price {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+.truePrice{
+    background: var(--color-secondary);
+    color: var(--color-bg);
+    padding: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.lessonPrice {
+    color: var(--color-primary);
+    font-weight: bold;
+}
+.totalCart{
+    padding: 30px 0;
+    border-top: 1px solid var(--color-text);
+    margin-top: 30px;
+}
 /* ========== TABLETTE (min-width: 768px) ========== */
 @media (min-width: 768px) {
     .itemList {
@@ -570,6 +651,13 @@ form h2:first-child{
     .cursus-price {
         font-size: 1.3rem;
         width: 100px;
+    }
+    .lesson-infos {
+        flex-direction: row;
+    }
+    .cursus-in-cart,
+    .lesson-in-cart {
+        flex-direction: row;
     }
 }
 

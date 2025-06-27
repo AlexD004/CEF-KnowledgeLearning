@@ -14,7 +14,7 @@
                     <div class="cursus-infos">
                         <h2>{{ cursus.name }}</h2>
                         <div class="addCartPrice"> 
-                            <a href="#" class="btn">Ajouter au panier</a>
+                            <a href="{{ path('cart_add', {'type': 'cursus' , 'id': cursus.id}) }}" class="btn">Ajouter au panier</a>
                             <div class="cursus-price">{{ cursus.price }} €</div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                                     <div class="lesson-infos">
                                         <a href="{{ path('excerpt_show', {'id': lesson.id}) }}"><p>{{ lesson.name }}</p></a>
                                         <div class="addCartPrice">
-                                            <a href="#" class="btn">Ajouter au panier</a>
+                                            <a href="{{ path('cart_add', {'type': 'lesson' , 'id': lesson.id}) }}" class="btn">Ajouter au panier</a>
                                             <div class="lesson-price">{{ lesson.price }} €</div>
                                         </div>
                                     </div>
