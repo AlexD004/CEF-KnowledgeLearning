@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Form\UserType;
 use App\Entity\User;
 
-#[Route('/apprenant', name: 'client_')]
 class ClientInfosController extends AbstractController
 {
     /**
@@ -20,7 +19,7 @@ class ClientInfosController extends AbstractController
      * Route: /apprenant/informations
      * Name: client_informations
      */
-    #[Route('/informations', name: 'informations')]
+    #[Route('/apprenant/informations', name: 'client_informations')]
     public function informations(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
     {
 
@@ -49,19 +48,13 @@ class ClientInfosController extends AbstractController
         ]);
     }
 
-    #[Route('/formations', name: 'formations')]
-    public function formations(): Response
-    {
-        return $this->render('client/userFormations.html.twig');
-    }
-
-    #[Route('/certificats', name: 'certificates')]
+    #[Route('/apprenant/certificats', name: 'client_certificates')]
     public function certificates(): Response
     {
         return $this->render('client/userCertificates.html.twig');
     }
 
-    #[Route('/achats', name: 'orders')]
+    #[Route('/apprenant/achats', name: 'client_orders')]
     public function orders(): Response
     {
         return $this->render('client/userOrders.html.twig');

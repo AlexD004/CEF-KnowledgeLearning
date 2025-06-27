@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ theme.name }} - Cursus{% endblock %}
+
+{% block body %}
+<div class="wrapper content">
+    <h1>{{ theme.name }}</h1>
+
+    {% if theme.cursuses is not empty %}
+        <ul class="cursus-list">
+            {% for cursus in theme.cursuses %}
+                <li class="cursus-item">
+                
+                    <div class="cursus-infos">
+                        <h2>{{ cursus.name }}</h2>
+                        <div class="addCartPrice"> 
+                            <a href="#" class="btn">Ajouter au panier</a>
+                            <div class="cursus-price">{{ cursus.price }} €</div>
+                        </div>
+                    </div>
+
+                    {% if cursus.lessons is not empty %}
+                        <ul class="lesson-list">
+                            {% for lesson in cursus.lessons %}
+                                <li class="lesson-item">
+                                    <div class="lesson-infos">
+                                        <a href="{{ path('excerpt_show', {'id': lesson.id}) }}"><p>{{ lesson.name }}</p></a>
+                                        <div class="addCartPrice">
+                                            <a href="#" class="btn">Ajouter au panier</a>
+                                            <div class="lesson-price">{{ lesson.price }} €</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p><em>Aucune leçon disponible pour ce cursus.</em></p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun cursus disponible pour ce thème.</p>
+    {% endif %}
+</div>
+{% endblock %}

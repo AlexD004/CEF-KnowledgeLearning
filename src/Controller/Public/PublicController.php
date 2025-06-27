@@ -7,16 +7,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 use App\Entity\User;
+use App\Entity\Theme;
+use App\Entity\Lesson;
 use App\Form\RegistrationTypeForm;
 use App\Service\User\UserRegistrationService;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\ThemeRepository;
 
 final class PublicController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(): Response
+    public function index(ThemeRepository $themeRepo): Response
     {
-        return $this->render('public/index.html.twig');
+        $themes = $themeRepo->findAll();
+
+        return $this->render('public/index.html.twig', [
+            'themes' => $themes,
+        ]);
     }
 
     #[Route('/register', name: 'register')]
@@ -38,6 +45,22 @@ final class PublicController extends AbstractController
 
         return $this->render('public/register.html.twig', [
             'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/theme/{id}', name: 'theme_show', requirements: ['id' => '\d+'])]
+    public function showTheme(Theme $theme): Response
+    {
+        return $this->render('public/theme_show.html.twig', [
+            'theme' => $theme,
+        ]);
+    }
+
+    #[Route('/formation/{id}', name: 'excerpt_show', requirements: ['id' => '\d+'])]
+    public function showExcerpt(Lesson $lesson): Response
+    {
+        return $this->render('public/excerpt_show.html.twig', [
+            'lesson' => $lesson,
         ]);
     }
 }

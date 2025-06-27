@@ -8,7 +8,7 @@ use App\Form\Model\LessonCreationData;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\{
-    CheckboxType, MoneyType, TextType, UrlType
+    CheckboxType, MoneyType, TextType
 };
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -144,8 +144,17 @@ class AdminLessonType extends AbstractType
             ->add('contentText', CKEditorType::class, [
                 'label' => 'Contenu texte de la formation',
             ])
-            ->add('contentVideoUrl', UrlType::class, [
-                'label' => 'Lien de la vidéo de formation',
+            ->add('videoFile', FileType::class, [
+                'label' => 'Vidéo de la formation',
+                'required' => false,
+                'mapped' => true,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '100M',
+                        'mimeTypes' => ['video/mp4', 'video/webm'],
+                        'mimeTypesMessage' => 'Formats acceptés : MP4, WebM',
+                    ]),
+                ],
             ])
             ->add('description', CKEditorType::class, [
                 'label' => 'Description de la formation',

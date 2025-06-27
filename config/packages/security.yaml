@@ -46,6 +46,9 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }        # Only admins can access /admin
         - { path: ^/apprenant, roles: ROLE_CLIENT }   # Clients and admins can access /dashboard
 
+    access_denied_url: /non-autorise
+
+
 # Test environment: use lightweight password hashing to speed up tests
 when@test:
     security:

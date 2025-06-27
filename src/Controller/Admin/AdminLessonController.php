@@ -16,6 +16,9 @@ use App\Repository\ThemeRepository;
 use App\Repository\CursusRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 
 /**
@@ -72,7 +75,8 @@ class AdminLessonController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         ThemeRepository $themeRepo,
-        CursusRepository $cursusRepo
+        CursusRepository $cursusRepo,
+        SluggerInterface $slugger
     ): Response {
         $data = new LessonCreationData();
 
@@ -135,23 +139,41 @@ class AdminLessonController extends AbstractController
                 $cursus = $data->selectedCursusId;
             }
 
-            // Lesson
+            // Create Lesson
             $lesson = new Lesson();
             $lesson->setName($data->lessonName);
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
-            $lesson->setContentVideoUrl($data->contentVideoUrl);
             $lesson->setDescription($data->description);
             $lesson->setIsValidated(false);
             $lesson->setCursus($cursus);
             $lesson->setCreatedBy($this->getUser());
             $lesson->setUpdatedBy($this->getUser());
 
+            // Image
             if ($data->image) {
                 $filename = uniqid('lesson_') . '.' . $data->image->guessExtension();
                 $data->image->move($this->getParameter('images_directory'), $filename);
                 $lesson->setImage($filename);
             }
+
+            // Vidéo
+            if ($data->videoFile) {
+                $originalFilename = pathinfo($data->videoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $data->videoFile->guessExtension();
+
+                try {
+                    $data->videoFile->move(
+                        $this->getParameter('private_videos_directory'),
+                        $newFilename
+                    );
+                    $lesson->setVideoFilename($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Erreur lors de l\'upload de la vidéo.');
+                }
+            }
+
 
             $em->persist($lesson);
             $em->flush();
@@ -181,11 +203,9 @@ class AdminLessonController extends AbstractController
     {
         $themeId = $request->query->get('themeId');
 
-        if (!$themeId) {
-            return new JsonResponse(['error' => 'Theme ID missing'], 400);
-        }
-
-        $cursusList = $cursusRepo->findBy(['theme' => $themeId]);
+        $cursusList = $themeId
+            ? $cursusRepo->findBy(['theme' => $themeId])
+            : $cursusRepo->findAll();
 
         $result = [];
         foreach ($cursusList as $cursus) {
@@ -255,17 +275,17 @@ class AdminLessonController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         ThemeRepository $themeRepo,
-        CursusRepository $cursusRepo
+        CursusRepository $cursusRepo,
+        SluggerInterface $slugger
     ): Response {
         $data = new LessonCreationData();
         $data->lessonName = $lesson->getName();
         $data->lessonPrice = $lesson->getPrice();
         $data->contentText = $lesson->getContentText();
-        $data->contentVideoUrl = $lesson->getContentVideoUrl();
         $data->description = $lesson->getDescription();
         $data->selectedThemeId = $lesson->getCursus()?->getTheme();
         $data->selectedCursusId = $lesson->getCursus();
-        $data->image = null; // on ne remplit pas l’image existante dans un champ file
+        $data->image = null; // On ne remplit pas les champs file (image / vidéo) pour des raisons de sécurité
 
         $form = $this->createForm(AdminLessonType::class, $data, [
             'validation_groups' => function (FormInterface $form) {
@@ -326,20 +346,37 @@ class AdminLessonController extends AbstractController
                 $cursus = $data->selectedCursusId;
             }
 
-            // Lesson
+            // Update Lesson
             $lesson->setName($data->lessonName);
             $lesson->setPrice($data->lessonPrice);
             $lesson->setContentText($data->contentText);
-            $lesson->setContentVideoUrl($data->contentVideoUrl);
             $lesson->setDescription($data->description);
             $lesson->setCursus($cursus);
             $lesson->setUpdatedBy($this->getUser());
             $lesson->setUpdatedAt(new \DateTimeImmutable());
 
+            // Replace image if uploaded
             if ($data->image) {
                 $filename = uniqid('lesson_') . '.' . $data->image->guessExtension();
                 $data->image->move($this->getParameter('images_directory'), $filename);
                 $lesson->setImage($filename);
+            }
+
+            // Replace video if uploaded
+            if ($data->videoFile) {
+                $originalFilename = pathinfo($data->videoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $data->videoFile->guessExtension();
+
+                try {
+                    $data->videoFile->move(
+                        $this->getParameter('private_videos_directory'),
+                        $newFilename
+                    );
+                    $lesson->setVideoFilename($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Erreur lors de l\'upload de la vidéo.');
+                }
             }
 
             $em->flush();
@@ -347,7 +384,7 @@ class AdminLessonController extends AbstractController
             $this->addFlash('success', 'Formation mise à jour avec succès.');
             return $this->redirectToRoute('admin_lesson_list');
         }
-        
+
         $theme = $lesson->getCursus()?->getTheme();
         $cursus = $lesson->getCursus();
 

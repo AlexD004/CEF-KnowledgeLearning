@@ -5,10 +5,10 @@
 {% block body %}
 <div class="wrapper content">
 
-    {# --- Start of Lesson Form --- #}
+    {# --- Lesson Form Start --- #}
     {{ form_start(form, { attr: { 'data-turbo': 'false' } }) }}
 
-    {# === Theme Selection === #}
+    {# === Theme Section === #}
     <h2>Thème de la formation</h2>
     {{ form_row(form.isNewTheme) }}
     <div id="existing-theme-fields">
@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    {# === Cursus Selection === #}
+    {# === Cursus Section === #}
     <h2>Cursus de la formation</h2>
     {{ form_row(form.isNewCursus) }}
     <div id="existing-cursus-fields">
@@ -54,7 +54,7 @@
     {{ form_row(form.lessonName) }}
     {{ form_row(form.lessonPrice) }}
     {{ form_row(form.contentText) }}
-    {{ form_row(form.contentVideoUrl) }}
+    {{ form_row(form.videoFile) }}
     {{ form_row(form.description) }}
     <div class="form-group">
         {{ form_label(form.image) }}
@@ -67,32 +67,22 @@
         {{ form_errors(form.image) }}
     </div>
 
-
-    {# === Metadata (if editing) === #}
+    {# === Metadata (only when editing) === #}
     {% if lesson %}
         <div class="responsabilities">
-            <p><strong>Créée le :</strong>
-                {{ lesson.createdAt ? lesson.createdAt|date('d/m/Y H:i') : '—' }}
-            </p>
-            <p><strong>Créée par :</strong>
-                {{ lesson.createdBy ? lesson.createdBy.email : '—' }}
-            </p>
-            <p><strong>Modifiée le :</strong>
-                {{ lesson.updatedAt ? lesson.updatedAt|date('d/m/Y H:i') : '—' }}
-            </p>
-            <p><strong>Modifiée par :</strong>
-                {{ lesson.updatedBy ? lesson.updatedBy.email : '—' }}
-            </p>
+            <p><strong>Créée le :</strong> {{ lesson.createdAt ? lesson.createdAt|date('d/m/Y H:i') : '—' }}</p>
+            <p><strong>Créée par :</strong> {{ lesson.createdBy ? lesson.createdBy.email : '—' }}</p>
+            <p><strong>Modifiée le :</strong> {{ lesson.updatedAt ? lesson.updatedAt|date('d/m/Y H:i') : '—' }}</p>
+            <p><strong>Modifiée par :</strong> {{ lesson.updatedBy ? lesson.updatedBy.email : '—' }}</p>
         </div>
     {% endif %}
 
-    {# === Submit Button === #}
     <button class="btn btn-primary mt-3">{{ lesson ? 'Modifier' : 'Ajouter' }}</button>
 
     {{ form_end(form) }}
-    {# --- End of Lesson Form --- #}
+    {# --- Lesson Form End --- #}
 
-    {# === Delete Form (only if editing) === #}
+    {# === Delete Button if editing === #}
     {% if lesson %}
         <form method="post"
               action="{{ path('admin_lesson_delete', { id: lesson.id }) }}"
@@ -102,72 +92,15 @@
             <button class="btn btn-danger">Supprimer</button>
         </form>
     {% endif %}
-
 </div>
 
-{# === JavaScript to Toggle Visibility for Theme/Cursus Inputs === #}
+{# === JavaScript for Dynamic Fields === #}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const isNewThemeCheckbox = document.querySelector('#{{ form.isNewTheme.vars.id }}');
-        const isNewCursusCheckbox = document.querySelector('#{{ form.isNewCursus.vars.id }}');
-
-        const existingThemeFields = document.getElementById('existing-theme-fields');
-        const newThemeFields = document.getElementById('new-theme-fields');
-        const existingCursusFields = document.getElementById('existing-cursus-fields');
-        const newCursusFields = document.getElementById('new-cursus-fields');
-
-        function toggleThemeFields() {
-            existingThemeFields.style.display = isNewThemeCheckbox.checked ? 'none' : 'block';
-            newThemeFields.style.display = isNewThemeCheckbox.checked ? 'block' : 'none';
-        }
-
-        function toggleCursusFields() {
-            existingCursusFields.style.display = isNewCursusCheckbox.checked ? 'none' : 'block';
-            newCursusFields.style.display = isNewCursusCheckbox.checked ? 'block' : 'none';
-        }
-
-        isNewThemeCheckbox.addEventListener('change', toggleThemeFields);
-        isNewCursusCheckbox.addEventListener('change', toggleCursusFields);
-
-        // Initial state
-        toggleThemeFields();
-        toggleCursusFields();
-
-        // === Filtrage des cursus si un thème est sélectionné ===
-        const themeSelect = document.querySelector('#{{ form.selectedThemeId.vars.id }}');
-        const cursusSelect = document.querySelector('#{{ form.selectedCursusId.vars.id }}');
-
-        if (themeSelect && cursusSelect) {
-            themeSelect.addEventListener('change', () => {
-                const themeId = themeSelect.value;
-                if (!themeId) return;
-
-                fetch('/admin/formation/cursus-par-theme?themeId=' + themeId)
-                    .then(response => {
-                        if (!response.ok) throw new Error('HTTP error ' + response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        cursusSelect.innerHTML = '';
-                        const defaultOption = document.createElement('option');
-                        defaultOption.text = 'Choisir un cursus';
-                        defaultOption.value = '';
-                        cursusSelect.appendChild(defaultOption);
-                        data.forEach(cursus => {
-                            const option = document.createElement('option');
-                            option.value = cursus.id;
-                            option.text = cursus.name;
-                            cursusSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération des cursus :', error);
-                    });
-            });
-        }
-    });
-
-
+    /**
+     * Preview uploaded image for a given input and target preview container.
+     * @param {HTMLInputElement} input
+     * @param {string} previewId
+     */
     function previewImage(input, previewId) {
         const file = input.files[0];
         if (file) {
@@ -181,10 +114,102 @@
                     input.closest('.form-group').insertBefore(img, input);
                 }
                 img.src = e.target.result;
-            }
+            };
             reader.readAsDataURL(file);
         }
     }
+
+    /**
+     * Initializes dynamic behavior once the page is fully loaded (even with Turbo Drive).
+     */
+    document.addEventListener('turbo:load', () => {
+        let isUpdatingFromCursus = false;
+
+        const isNewThemeCheckbox = document.querySelector('#{{ form.isNewTheme.vars.id }}');
+        const isNewCursusCheckbox = document.querySelector('#{{ form.isNewCursus.vars.id }}');
+        const existingThemeFields = document.getElementById('existing-theme-fields');
+        const newThemeFields = document.getElementById('new-theme-fields');
+        const existingCursusFields = document.getElementById('existing-cursus-fields');
+        const newCursusFields = document.getElementById('new-cursus-fields');
+        const themeSelect = document.querySelector('#{{ form.selectedThemeId.vars.id }}');
+        const cursusSelect = document.querySelector('#{{ form.selectedCursusId.vars.id }}');
+
+        function toggleThemeFields() {
+            existingThemeFields.style.display = isNewThemeCheckbox.checked ? 'none' : 'block';
+            newThemeFields.style.display = isNewThemeCheckbox.checked ? 'block' : 'none';
+        }
+
+        function toggleCursusFields() {
+            existingCursusFields.style.display = isNewCursusCheckbox.checked ? 'none' : 'block';
+            newCursusFields.style.display = isNewCursusCheckbox.checked ? 'block' : 'none';
+        }
+
+        function populateCursusOptions(cursuses, selectedId = null) {
+            cursusSelect.innerHTML = '';
+            const defaultOption = new Option('Choisir un cursus', '');
+            cursusSelect.appendChild(defaultOption);
+
+            cursuses.forEach(cursus => {
+                const option = new Option(cursus.name, cursus.id);
+                if (selectedId && selectedId == cursus.id) option.selected = true;
+                cursusSelect.appendChild(option);
+            });
+        }
+
+        // Initial display
+        toggleThemeFields();
+        toggleCursusFields();
+
+        // Load initial cursus list
+        fetch(`/admin/formation/cursus-par-theme${themeSelect.value ? `?themeId=${themeSelect.value}` : ''}`)
+            .then(res => res.json())
+            .then(data => {
+                populateCursusOptions(data, cursusSelect.dataset.selected || cursusSelect.value);
+            });
+
+        // Change theme → reload cursus
+        themeSelect.addEventListener('change', () => {
+            const themeId = themeSelect.value;
+
+            if (!themeId) {
+                // Load all cursus if theme reset
+                fetch(`/admin/formation/cursus-par-theme`)
+                    .then(res => res.json())
+                    .then(data => populateCursusOptions(data, cursusSelect.value));
+                return;
+            }
+
+            fetch(`/admin/formation/cursus-par-theme?themeId=${themeId}`)
+                .then(res => res.json())
+                .then(data => populateCursusOptions(data, cursusSelect.value));
+        });
+
+        // Change cursus → update theme
+        cursusSelect.addEventListener('change', () => {
+            if (isUpdatingFromCursus) return;
+            const cursusId = cursusSelect.value;
+            if (!cursusId) return;
+
+            fetch(`/admin/formation/theme-par-cursus?cursusId=${cursusId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.id) {
+                        isUpdatingFromCursus = true;
+                        themeSelect.value = data.id;
+
+                        fetch(`/admin/formation/cursus-par-theme?themeId=${data.id}`)
+                            .then(res => res.json())
+                            .then(cursusList => {
+                                populateCursusOptions(cursusList, cursusId);
+                                isUpdatingFromCursus = false;
+                            });
+                    }
+                });
+        });
+
+        isNewThemeCheckbox.addEventListener('change', toggleThemeFields);
+        isNewCursusCheckbox.addEventListener('change', toggleCursusFields);
+    });
 </script>
 
 {% endblock %}

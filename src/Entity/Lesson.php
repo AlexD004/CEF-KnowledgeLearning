@@ -49,10 +49,10 @@ class Lesson
     private ?string $contentText = null;
 
     /**
-     * The URL pointing to the video content of the lesson.
+     * The video content of the lesson.
      */
-    #[ORM\Column(length: 255)]
-    private ?string $contentVideoUrl = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $videoFilename = null;
 
     /**
      * The cursus to which this lesson belongs.
@@ -164,26 +164,27 @@ class Lesson
     }
 
     /**
-     * Get the video URL of the lesson.
+     * Returns the filename of the uploaded lesson video.
      *
-     * @return string|null The video URL
+     * @return string|null The name of the video file, or null if not set
      */
-    public function getContentVideoUrl(): ?string
+    public function getVideoFilename(): ?string
     {
-        return $this->contentVideoUrl;
+        return $this->videoFilename;
     }
 
     /**
-     * Set the video URL of the lesson.
+     * Sets the filename of the uploaded lesson video.
      *
-     * @param string $contentVideoUrl The video URL to set
-     * @return static
+     * @param string|null $videoFilename The filename to store (e.g., "lesson123.mp4")
+     * @return self
      */
-    public function setContentVideoUrl(string $contentVideoUrl): static
+    public function setVideoFilename(?string $videoFilename): self
     {
-        $this->contentVideoUrl = $contentVideoUrl;
+        $this->videoFilename = $videoFilename;
         return $this;
     }
+
 
     /**
      * Get the cursus this lesson is associated with.
