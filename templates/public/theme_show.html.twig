@@ -24,7 +24,7 @@
                             {% for lesson in cursus.lessons %}
                                 <li class="lesson-item">
                                     <div class="lesson-infos">
-                                        <p>{{ lesson.name }}</p>
+                                        <a href="{{ path('excerpt_show') }}"><p>{{ lesson.name }}</p></a>
                                         <div class="addCartPrice">
                                             <a href="#" class="btn">Ajouter au panier</a>
                                             <div class="lesson-price">{{ lesson.price }} €</div>

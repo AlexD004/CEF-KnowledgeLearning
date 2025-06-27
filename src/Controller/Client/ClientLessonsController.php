@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Controller responsible for displaying purchased lessons to logged-in users.
  */
 #[IsGranted('ROLE_CLIENT')]
-class ClientFormationsController extends AbstractController
+class ClientLessonsController extends AbstractController
 {
     /**
      * Displays the list of purchased lessons, grouped by cursus.

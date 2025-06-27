@@ -54,4 +54,12 @@ final class PublicController extends AbstractController
             'theme' => $theme,
         ]);
     }
+
+    #[Route('/theme/extrait/{id}', name: 'excerpt_show', requirements: ['id' => '\d+'])]
+    public function showExcerpt(Theme $theme): Response
+    {
+        return $this->render('public/excerpt_show.html.twig', [
+            'theme' => $theme,
+        ]);
+    }
 }

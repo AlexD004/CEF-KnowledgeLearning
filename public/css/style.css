@@ -19,7 +19,6 @@ body {
     background-color: #fff;
     color: var(--color-text);
     line-height: 1.6;
-    padding: 20px;
 }
 .wrapper {
     width: 90%;
@@ -131,7 +130,6 @@ a:hover {
 /* === FOOTER STRUCTURE === */
 
 .footer {
-    margin-top: 50px;
     padding: 20px 0;
     background-color: var(--color-bg);
     text-align: center;
@@ -461,6 +459,26 @@ form h2:first-child{
 
 .cursus-block {
     margin-bottom: 2rem;
+}
+
+.lesson-image{
+    width: 100%;
+    height: 10%;
+    min-height: 150px;
+    max-height: 350px;
+    position: relative;
+    overflow: hidden;
+}
+.lesson-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.lesson-text{
+    margin-top: 50px;
+}
+.lesson-text p{
+    margin: 20px 0;
 }
 
 /* ========== TABLETTE (min-width: 768px) ========== */
