@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\OrderRepository;
+use App\Repository\OrdersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')]
+/**
+ * Represents a customer's order including payment and product details.
+ */
+#[ORM\Entity(repositoryClass: OrdersRepository::class)]
+#[ORM\Table(name: '`orders`')]
 #[ORM\HasLifecycleCallbacks]
-class Order
+class Orders
 {
     use TimestampableEntity;
 
@@ -36,7 +39,7 @@ class Order
     /**
      * @var Collection<int, OrderItem>
      */
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderId')]
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
     private Collection $items;
 
     public function __construct()
@@ -57,7 +60,6 @@ class Order
     public function setStripeSessionId(string $stripeSessionId): static
     {
         $this->stripeSessionId = $stripeSessionId;
-
         return $this;
     }
 
@@ -69,7 +71,6 @@ class Order
     public function setTotal(float $total): static
     {
         $this->total = $total;
-
         return $this;
     }
 
@@ -81,7 +82,6 @@ class Order
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -93,7 +93,6 @@ class Order
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -109,7 +108,7 @@ class Order
     {
         if (!$this->items->contains($item)) {
             $this->items->add($item);
-            $item->setOrderId($this);
+            $item->setOrder($this);
         }
 
         return $this;
@@ -118,9 +117,8 @@ class Order
     public function removeItem(OrderItem $item): static
     {
         if ($this->items->removeElement($item)) {
-            // set the owning side to null (unless already changed)
-            if ($item->getOrderId() === $this) {
-                $item->setOrderId(null);
+            if ($item->getOrder() === $this) {
+                $item->setOrder(null);
             }
         }
 

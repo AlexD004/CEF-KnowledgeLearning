@@ -51,6 +51,7 @@ class StripeService
             'mode' => 'payment',
             'success_url' => $this->urlGenerator->generate('payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'cancel_url' => $this->urlGenerator->generate('cart_show', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'client_reference_id' => (string) $cartItems[0]->getUser()->getId(),
         ]);
 
         return $session->url;

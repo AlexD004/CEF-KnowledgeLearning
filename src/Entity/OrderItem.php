@@ -3,15 +3,19 @@
 namespace App\Entity;
 
 use App\Repository\OrderItemRepository;
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Traits\TimestampableEntity;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Represents a single purchased item within an order.
+ * Can be a lesson or a cursus.
+ */
 #[ORM\Entity(repositoryClass: OrderItemRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class OrderItem
 {
     use TimestampableEntity;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,7 +23,7 @@ class OrderItem
 
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Order $orderId = null;
+    private ?Orders $order = null;
 
     #[ORM\ManyToOne]
     private ?Lesson $lesson = null;
@@ -33,20 +37,22 @@ class OrderItem
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $label = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getOrderId(): ?Order
+    public function getOrder(): ?Orders
     {
-        return $this->orderId;
+        return $this->order;
     }
 
-    public function setOrderId(?Order $orderId): static
+    public function setOrder(?Orders $order): static
     {
-        $this->orderId = $orderId;
-
+        $this->order = $order;
         return $this;
     }
 
@@ -58,7 +64,6 @@ class OrderItem
     public function setLesson(?Lesson $lesson): static
     {
         $this->lesson = $lesson;
-
         return $this;
     }
 
@@ -70,7 +75,6 @@ class OrderItem
     public function setCursus(?Cursus $cursus): static
     {
         $this->cursus = $cursus;
-
         return $this;
     }
 
@@ -82,7 +86,6 @@ class OrderItem
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
         return $this;
     }
 
@@ -94,7 +97,17 @@ class OrderItem
     public function setType(string $type): static
     {
         $this->type = $type;
+        return $this;
+    }
 
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
         return $this;
     }
 }

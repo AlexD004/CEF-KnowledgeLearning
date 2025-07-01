@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Client;
+namespace App\Controller\StripePayment;
 
 use App\Repository\CartItemRepository;
 use App\Service\StripeService;
