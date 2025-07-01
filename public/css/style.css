@@ -151,6 +151,9 @@ a:hover {
     text-align: center;
     margin-bottom: 20px;
 }
+.wrapper.center{
+    text-align: center;
+}
 
 /* === Register & Log forms === */
 
@@ -226,7 +229,8 @@ input[type="file"]{
     font-weight: bold;
 }
 form button,
-.btn{
+.btn,
+.cart form button.btn{
     width: 100%;
     max-width: 500px;
     height: 40px;

@@ -64,7 +64,10 @@
             <p><strong>Total TTC : {{ totalTTC|number_format(2, '.', ' ') }} €</strong></p>
         </div>
 
-        <a href="{{ path('payment_checkout') }}" class="btn btn-primary">Payer maintenant</a>
+        <form action="{{ path('payment_checkout') }}" method="POST" data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrf_token('checkout') }}">
+            <button type="submit" class="btn btn-primary">Payer maintenant</button>
+        </form>
 
     </div>
 {% endblock %}

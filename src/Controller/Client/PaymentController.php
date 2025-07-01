@@ -7,6 +7,9 @@ use App\Service\StripeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
 
 /**
  * Handles payment redirection and results.
@@ -21,8 +24,18 @@ class PaymentController extends AbstractController
      * @return Response
      */
     #[Route('/paiement', name: 'payment_checkout')]
-    public function checkout(CartItemRepository $cartItemRepository, StripeService $stripeService): Response
-    {
+    public function checkout(
+        Request $request,
+        CartItemRepository $cartItemRepository,
+        StripeService $stripeService,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): Response {
+        $token = new CsrfToken('checkout', $request->request->get('_token'));
+
+        if (!$csrfTokenManager->isTokenValid($token)) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -58,7 +71,6 @@ class PaymentController extends AbstractController
     #[Route('/paiement/annulation', name: 'payment_cancel')]
     public function cancel(): Response
     {
-        $this->addFlash('warning', 'Le paiement a été annulé.');
-        return $this->redirectToRoute('cart_show');
+        return $this->render('payment/cancel.html.twig');
     }
 }
