@@ -251,7 +251,6 @@ form button:hover,
 .btn{
     padding: 10px;
 }
-.cart .btn,
 .cart form button{
     width: auto;
     height: auto;
@@ -266,7 +265,6 @@ form button:hover,
     font-family: 'Comic Sans MS';
     font-weight: bold;
 }
-.cart .btn:hover,
 .cart form button:hover{
     color: var(--color-primary);
 }

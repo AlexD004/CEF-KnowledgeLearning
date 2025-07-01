@@ -63,5 +63,8 @@
             <p>TVA ({{ TVA * 100 }}%) : {{ (totalHT * TVA)|number_format(2, '.', ' ') }} €</p>
             <p><strong>Total TTC : {{ totalTTC|number_format(2, '.', ' ') }} €</strong></p>
         </div>
+
+        <a href="{{ path('payment_checkout') }}" class="btn btn-primary">Payer maintenant</a>
+
     </div>
 {% endblock %}

@@ -37,6 +37,7 @@
                                     <a class=" userFormations {% if app.request.get('_route') == 'client_formations' %}active{% endif %} " href="{{ path('client_formations') }}">Mes formations</a>
                                     <a class=" userCertificates {% if app.request.get('_route') == 'client_certificates' %}active{% endif %} " href="{{ path('client_certificates') }}">Mes certificats</a>
                                     <a class=" userOrders {% if app.request.get('_route') == 'client_orders' %}active{% endif %} " href="{{ path('client_orders') }}">Mes achats</a>
+                                    <a class=" userOrders {% if app.request.get('_route') == 'cart_show' %}active{% endif %} " href="{{ path('cart_show') }}">Mon Panier</a>
                                 {% endif %}
                             </div>
                         {% else %}
