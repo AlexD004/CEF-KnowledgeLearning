@@ -589,6 +589,29 @@ form h2:first-child{
     border-top: 1px solid var(--color-text);
     margin-top: 30px;
 }
+
+/* === Orders list === */
+.order-block,
+.order-infos{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.order-infos{
+    gap: 0;
+}
+.order-block {
+    padding: 20px 0;
+    border-top: 1px solid var(--color-secondary);
+}
+.order-block:last-child{
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+
+
 /* ========== TABLETTE (min-width: 768px) ========== */
 @media (min-width: 768px) {
     .itemList {
@@ -660,6 +683,18 @@ form h2:first-child{
     .cursus-in-cart,
     .lesson-in-cart {
         flex-direction: row;
+    }
+
+    .order-block,
+    .order-infos{
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .order-infos{
+        gap: 20px;
+    }
+    .order-block {
+        padding: 10px 0;
     }
 }
 
