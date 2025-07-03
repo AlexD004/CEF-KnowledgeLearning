@@ -51,12 +51,24 @@ class StripeWebhookController extends AbstractController
         $data = json_decode($payload, true);
 
         // Validate event type
-        if (!isset($data['type']) || $data['type'] !== 'checkout.session.completed') {
+      /*  if (!isset($data['type']) || $data['type'] !== 'checkout.session.completed') {
             return new Response('Invalid event type', 400);
+        }*/
+
+        if (!isset($data['type'])) {
+            return new Response('Missing event type', 400);
         }
 
+        $type = $data['type'];
+
+        if ($type !== 'checkout.session.completed') {
+            return new Response('Ignored event type: ' . $type, 400);
+        }
+
+        /*_____ */
+
         $session = $data['data']['object'];
-        $email = $session['customer_email'] ?? null;
+        $email = $session['customer_email'] ?? $session['customer_details']['email'] ?? null;
         $sessionId = $session['id'] ?? null;
 
         if (!$email || !$sessionId) {
