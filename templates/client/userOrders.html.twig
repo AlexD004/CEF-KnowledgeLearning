@@ -4,6 +4,20 @@
 
 {% block body %}
 <div class="wrapper content">
-    <h1>Client : Achats</h1>
+    <h1>Mes commandes</h1>
+
+    {% if orders is empty %}
+        <p>Aucune commande trouvée pour le moment.</p>
+    {% else %}
+        {% for order in orders %}
+            <div class="order-block">
+                <h3>Commande #{{ order.id }}</h3>
+                <div class="order-infos">
+                    <p><strong>Date :</strong> {{ order.createdAt|date('d/m/Y') }}</p>
+                    <p><strong>Total :</strong> {{ order.total|number_format(2, ',', ' ') }} €</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

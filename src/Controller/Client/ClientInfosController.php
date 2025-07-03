@@ -53,10 +53,4 @@ class ClientInfosController extends AbstractController
     {
         return $this->render('client/userCertificates.html.twig');
     }
-
-    #[Route('/apprenant/achats', name: 'client_orders')]
-    public function orders(): Response
-    {
-        return $this->render('client/userOrders.html.twig');
-    }
 }
