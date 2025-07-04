@@ -2,145 +2,62 @@
 
 namespace App\Controller\StripePayment;
 
-use App\Entity\Orders;
-use App\Entity\OrderItem;
-use App\Entity\UserLesson;
-use App\Repository\UserRepository;
-use App\Repository\LessonRepository;
-use App\Repository\CursusRepository;
-use App\Repository\CartItemRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\PurchaseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Controller handling Stripe webhook calls after checkout success.
+ * Controller handling Stripe webhook events after payment completion.
+ *
+ * Listens for 'checkout.session.completed' to process successful orders.
  */
 class StripeWebhookController extends AbstractController
 {
-
     /**
-     * Handles the Stripe webhook event when payment is completed.
+     * Handles the Stripe webhook event when a checkout session is completed.
      *
-     * This endpoint listens to Stripe's 'checkout.session.completed' event
-     * and processes the following:
-     * - Registers the order and order items in DB
-     * - Links lessons to the user (via UserLesson)
-     * - Clears the user's cart
+     * Delegates the actual business logic to the PurchaseService.
+     * This method should be protected from unauthorized access (Stripe signs webhook calls).
      *
-     * @param Request $request
-     * @param EntityManagerInterface $em
-     * @param UserRepository $userRepo
-     * @param LessonRepository $lessonRepo
-     * @param CursusRepository $cursusRepo
-     * @param CartItemRepository $cartRepo
-     * @return Response
+     * Expected JSON payload format (simplified):
+     * {
+     *   "type": "checkout.session.completed",
+     *   "data": {
+     *     "object": {
+     *       "id": "cs_test_...",
+     *       "customer_email": "user@example.com"
+     *     }
+     *   }
+     * }
+     *
+     * @param Request $request The incoming HTTP request containing the Stripe payload
+     * @param PurchaseService $purchaseService The service responsible for handling post-payment operations
+     * @return Response A 200 response on success, 4xx on failure or ignored events
      */
     #[Route('/webhook/stripe', name: 'stripe_webhook', methods: ['POST'])]
     public function handleWebhook(
         Request $request,
-        EntityManagerInterface $em,
-        UserRepository $userRepo,
-        LessonRepository $lessonRepo,
-        CursusRepository $cursusRepo,
-        CartItemRepository $cartRepo
+        PurchaseService $purchaseService
     ): Response {
+        // Retrieve and decode the raw JSON payload from Stripe
         $payload = $request->getContent();
         $data = json_decode($payload, true);
 
         // Validate event type
-
-        if (!isset($data['type'])) {
-            return new Response('Missing event type', 400);
+        if (!isset($data['type']) || $data['type'] !== 'checkout.session.completed') {
+            return new Response('Ignored or malformed event', 400);
         }
 
-        $type = $data['type'];
-
-        if ($type !== 'checkout.session.completed') {
-            return new Response('Ignored event type: ' . $type, 400);
+        // Extract the session object from the event
+        $session = $data['data']['object'] ?? null;
+        if (!$session) {
+            return new Response('Missing session object', 400);
         }
 
-        $session = $data['data']['object'];
-        $email = $session['customer_email'] ?? $session['customer_details']['email'] ?? null;
-        $sessionId = $session['id'] ?? null;
-
-        if (!$email || !$sessionId) {
-            return new Response('Missing email or session ID', 400);
-        }
-
-        // Retrieve user from email
-        $user = $userRepo->findOneBy(['email' => $email]);
-        if (!$user) {
-            return new Response('User not found', 404);
-        }
-
-        // Get user's cart items
-        $cartItems = $cartRepo->findBy(['user' => $user]);
-        if (empty($cartItems)) {
-            return new Response('Empty cart', 200);
-        }
-
-        // Create order entity
-        $order = new Orders();
-        $order->setUser($user);
-        $order->setStripeSessionId($sessionId);
-        $order->setStatus('paid');
-        $order->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris')));
-
-        $total = 0;
-
-        foreach ($cartItems as $cartItem) {
-            $orderItem = new OrderItem();
-            $orderItem->setOrder($order);
-
-            // Handle lesson purchase
-            if ($lesson = $cartItem->getLesson()) {
-                $orderItem->setType('lesson');
-                $orderItem->setLabel($lesson->getName());
-                $orderItem->setPrice($lesson->getPrice());
-                $orderItem->setLesson($lesson);
-
-                // Grant access to lesson
-                $userLesson = new UserLesson();
-                $userLesson->setUser($user);
-                $userLesson->setLesson($lesson);
-                $em->persist($userLesson);
-
-                $total += $lesson->getPrice();
-            }
-
-            // Handle cursus purchase
-            elseif ($cursus = $cartItem->getCursus()) {
-                $orderItem->setType('cursus');
-                $orderItem->setLabel($cursus->getName());
-                $orderItem->setPrice($cursus->getPrice());
-                $orderItem->setCursus($cursus);
-
-                // Grant access to all lessons in cursus
-                foreach ($cursus->getLessons() as $lesson) {
-                    $userLesson = new UserLesson();
-                    $userLesson->setUser($user);
-                    $userLesson->setLesson($lesson);
-                    $em->persist($userLesson);
-                }
-
-                $total += $cursus->getPrice();
-            }
-
-            // Add order item and cleanup cart
-            $em->persist($orderItem);
-            $order->addItem($orderItem);
-            $em->remove($cartItem);
-        }
-
-        // Finalize order
-        $order->setTotal($total);
-        $em->persist($order);
-
-        // Persist everything
-        $em->flush();
+        // Delegate payment processing to the dedicated service
+        $purchaseService->processSuccessfulPayment($session);
 
         return new Response('Webhook processed', 200);
     }
