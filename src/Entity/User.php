@@ -83,10 +83,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Orders::class, mappedBy: 'user')]
     private Collection $orders;
 
+    /**
+     * @var Collection<int, UserCertification>
+     */
+    #[ORM\OneToMany(targetEntity: UserCertification::class, mappedBy: 'user')]
+    private Collection $certications;
+
     public function __construct()
     {
         $this->cartItems = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->certications = new ArrayCollection();
     }
 
 
@@ -330,6 +337,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($order->getUser() === $this) {
                 $order->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserCertification>
+     */
+    public function getCertications(): Collection
+    {
+        return $this->certications;
+    }
+
+    public function addCertication(UserCertification $certication): static
+    {
+        if (!$this->certications->contains($certication)) {
+            $this->certications->add($certication);
+            $certication->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCertication(UserCertification $certication): static
+    {
+        if ($this->certications->removeElement($certication)) {
+            // set the owning side to null (unless already changed)
+            if ($certication->getUser() === $this) {
+                $certication->setUser(null);
             }
         }
 

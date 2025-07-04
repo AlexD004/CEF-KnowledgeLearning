@@ -9,7 +9,7 @@
         <img src="{{ asset('uploads/images/' ~ lesson.image) }}" alt="Image de la formation {{ lesson.name }}" style="max-width: 100%; height: auto;">
     </div>
 {% endif %}
-<div class="wrapper content">
+<div class="wrapper content lesson">
     <h1>{{ lesson.name }}</h1>
 
     {% if lesson.videoFilename %}
@@ -26,6 +26,19 @@
             {{ lesson.contentText|raw }}
         </div>
     {% endif %}
+
+    {% if not userLesson.isValidated %}
+        <form method="post" action="{{ path('client_lesson_validate', {id: lesson.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('validate_lesson_' ~ lesson.id) }}">
+            <button type="submit" class="btn btn-success">
+                Valider cette leçon
+            </button>
+        </form>
+    {% else %}
+        <div class="alert alert-info">✅ Leçon déjà validée</div>
+    {% endif %}
+</div>
+
 <script>
     document.addEventListener('contextmenu', function(event) {
         if (event.target.tagName === 'VIDEO') {
@@ -33,5 +46,4 @@
         }
     });
 </script>
-</div>
 {% endblock %}

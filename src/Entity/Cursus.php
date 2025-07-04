@@ -64,11 +64,18 @@ class Cursus
     private Collection $lessons;
 
     /**
+     * @var Collection<int, UserCertification>
+     */
+    #[ORM\OneToMany(targetEntity: UserCertification::class, mappedBy: 'cursus')]
+    private Collection $usersCertificate;
+
+    /**
      * Constructor initializes the lessons collection.
      */
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
+        $this->usersCertificate = new ArrayCollection();
     }
 
     /**
@@ -206,6 +213,36 @@ class Cursus
         if ($this->lessons->removeElement($lesson)) {
             if ($lesson->getCursus() === $this) {
                 $lesson->setCursus(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserCertification>
+     */
+    public function getUsersCertificate(): Collection
+    {
+        return $this->usersCertificate;
+    }
+
+    public function addUsersCertificate(UserCertification $usersCertificate): static
+    {
+        if (!$this->usersCertificate->contains($usersCertificate)) {
+            $this->usersCertificate->add($usersCertificate);
+            $usersCertificate->setCursus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersCertificate(UserCertification $usersCertificate): static
+    {
+        if ($this->usersCertificate->removeElement($usersCertificate)) {
+            // set the owning side to null (unless already changed)
+            if ($usersCertificate->getCursus() === $this) {
+                $usersCertificate->setCursus(null);
             }
         }
 

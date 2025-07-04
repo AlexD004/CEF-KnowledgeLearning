@@ -21,9 +21,16 @@
 
                     {% for lesson in allLessons %}
                         {% set isPurchased = lesson.id in purchasedLessonIds %}
+                        {% set isValidated = lesson.id in validatedLessonIds %}
+
                         <li class="lesson-item {% if not isPurchased %}locked{% endif %}">
                             {% if isPurchased %}
                                 <a href="{{ path('client_lesson_show', { id: lesson.id }) }}">
+                                   {% if isValidated %}
+                                        ✅
+                                    {% else %}
+                                        ➡️
+                                    {% endif %}
                                     {{ lesson.name }}
                                 </a>
                             {% else %}
