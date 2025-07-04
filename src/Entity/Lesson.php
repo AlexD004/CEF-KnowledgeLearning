@@ -82,12 +82,6 @@ class Lesson
     private ?string $image = null;
 
     /**
-     * Indicates whether the lesson has been validated/completed.
-     */
-    #[ORM\Column(type: 'boolean')]
-    private bool $isValidated = false;
-
-    /**
      * Get the ID of the lesson.
      *
      * @return int|null The lesson ID
@@ -249,28 +243,6 @@ class Lesson
     public function setImage(?string $image): self
     {
         $this->image = $image;
-        return $this;
-    }
-
-    /**
-     * Check if the lesson is validated.
-     *
-     * @return bool True if validated, false otherwise
-     */
-    public function isValidated(): bool
-    {
-        return $this->isValidated;
-    }
-
-    /**
-     * Set the lesson as validated or not.
-     *
-     * @param bool $isValidated Whether the lesson is validated
-     * @return static
-     */
-    public function setIsValidated(bool $isValidated): static
-    {
-        $this->isValidated = $isValidated;
         return $this;
     }
 }

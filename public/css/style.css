@@ -285,6 +285,9 @@ form button.btn-danger:hover {
 .alert{
     color: var(--color-accent);
 }
+.alert-info{
+    color: var(--color-primary);
+}
 .cart .alert {
     color: var(--color-bg);
     margin: 25px 0;
@@ -548,6 +551,12 @@ form h2:first-child{
     margin-top: 5px;
 }
 .lesson-price-cart {
+    margin-top: 50px;
+}
+.lesson .alert-info{
+    border-bottom: 1px solid;
+    border-top: 1px solid;
+    padding: 10px 0;
     margin-top: 50px;
 }
 

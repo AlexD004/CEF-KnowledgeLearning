@@ -9,6 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
+use App\Repository\UserLessonRepository;
+use App\Service\User\UserCertificationService;
 
 /**
  * Controller responsible for displaying purchased lessons to logged-in users.
@@ -34,6 +38,31 @@ class ClientLessonsController extends AbstractController
         // Retrieve all lessons purchased by the current user
         $userLessonEntries = $em->getRepository(UserLesson::class)->findBy(['user' => $user]);
 
+        $purchasedLessonIds = [];
+        $validatedLessonIds = [];
+
+        foreach ($userLessonEntries as $userLesson) {
+            $lesson = $userLesson->getLesson();
+            $lessonId = $lesson->getId();
+
+            $purchasedLessonIds[] = $lessonId;
+
+            if ($userLesson->isValidated()) {
+                $validatedLessonIds[] = $lessonId;
+            }
+
+            $cursusId = $lesson->getCursus()->getId();
+
+            if (!isset($lessonsGroupedByCursus[$cursusId])) {
+                $lessonsGroupedByCursus[$cursusId] = [
+                    'cursus' => $lesson->getCursus(),
+                    'purchasedLessons' => [],
+                ];
+            }
+
+            $lessonsGroupedByCursus[$cursusId]['purchasedLessons'][] = $lesson;
+        }
+
         // Group lessons by cursus
         $lessonsGroupedByCursus = [];
 
@@ -54,6 +83,8 @@ class ClientLessonsController extends AbstractController
 
         return $this->render('client/userFormations.html.twig', [
             'lessonsGroupedByCursus' => $lessonsGroupedByCursus,
+            'purchasedLessonIds' => $purchasedLessonIds,
+            'validatedLessonIds' => $validatedLessonIds,
         ]);
     }
 
@@ -89,6 +120,52 @@ class ClientLessonsController extends AbstractController
 
         return $this->render('client/lesson_show.html.twig', [
             'lesson' => $lesson,
+            'userLesson' => $userLesson,
         ]);
+    }
+
+
+    #[Route('/apprenant/formation/{id}/valider', name: 'client_lesson_validate', methods: ['POST'])]
+    public function validateLesson(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em,
+        UserLessonRepository $userLessonRepository,
+        Security $security,
+        UserCertificationService $certificationService
+    ): Response {
+        $user = $security->getUser();
+        $lesson = $em->getRepository(Lesson::class)->find($id);
+
+        if (!$lesson) {
+            throw $this->createNotFoundException('Formation introuvable.');
+        }
+
+        $userLesson = $userLessonRepository->findOneBy([
+            'user' => $user,
+            'lesson' => $lesson,
+        ]);
+
+        if (!$userLesson) {
+            $this->addFlash('error', "Vous n'avez pas accès à cette formation.");
+            return $this->redirectToRoute('client_formations');
+        }
+
+        // Protection CSRF
+        if (!$this->isCsrfTokenValid('validate_lesson_'.$lesson->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Échec de sécurité. Veuillez réessayer.');
+            return $this->redirectToRoute('client_lesson_show', ['id' => $lesson->getId()]);
+        }
+
+        if ($userLesson->isValidated()) {
+            $this->addFlash('info', 'Cette leçon est déjà validée.');
+        } else {
+            $userLesson->setIsValidated(true);
+            $em->flush();
+            $certificationService->checkAndCreateCertification($user, $lesson);
+            $this->addFlash('success', 'Leçon validée avec succès !');
+        }
+
+        return $this->redirectToRoute('client_formations');
     }
 }
