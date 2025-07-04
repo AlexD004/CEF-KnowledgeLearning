@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: "DejaVu Sans", sans-serif;
+            text-align: center;
+            padding: 80px 50px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .name {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .date {
+            margin-top: 40px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .signature {
+            margin-top: 60px;
+            font-size: 16px;
+        }
+
+        hr {
+            margin: 30px auto;
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ asset('images/logo-knowledge.png') }}" alt="Logo" width="120" class="logo">
+
+    <h1>Certificat de réussite</h1>
+
+    <p class="section">Nous certifions que :</p>
+
+    <p class="name">{{ user.firstName|capitalize }} {{ user.lastName|upper }}</p>
+
+    <p class="section">a complété avec succès le cursus suivant :</p>
+
+    <p class="section"><strong>{{ certification.cursus.name }}</strong></p>
+
+    <p class="date">Délivré le {{ certification.createdAt|date('d/m/Y') }}</p>
+
+    <div class="signature">
+        <hr>
+        <p>Plateforme Knowledge Learning</p>
+    </div>
+
+    <div class="footer">
+        Certificat généré automatiquement – valable sans signature
+    </div>
+
+</body>
+</html>

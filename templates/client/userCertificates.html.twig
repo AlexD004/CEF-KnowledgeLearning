@@ -10,6 +10,11 @@
         <div class="certif-item">
             <div class="certif-name">🎓 {{ certification.cursus.name }}</div>
             <div class="certif-infos">Obtenu le : {{ certification.createdAt|date('d/m/Y') }}</div>
+            <div class="certif-pdf">
+                <a href="{{ path('client_certificates_pdf', {id: certification.id}) }}" class="" target="_blank">
+                    📄 Voir le certificat
+                </a>
+            </div>
         </div>
     {% else %}
         <p>Vous n'avez pas encore validé de cursus.</p>
