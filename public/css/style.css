@@ -619,7 +619,16 @@ form h2:first-child{
     border-bottom: 1px solid var(--color-secondary);
 }
 
+/* === Certif list === */
 
+.certif-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid;
+    padding: 10px 0;
+}
 
 /* ========== TABLETTE (min-width: 768px) ========== */
 @media (min-width: 768px) {
@@ -704,6 +713,11 @@ form h2:first-child{
     }
     .order-block {
         padding: 10px 0;
+    }
+    .certif-item {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
 }
 

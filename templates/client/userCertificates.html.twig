@@ -4,6 +4,16 @@
 
 {% block body %}
 <div class="wrapper content">
-    <h1>Client : Certificats</h1>
+    <h1>Mes certificats</h1>
+
+    {% for certification in certifications %}
+        <div class="certif-item">
+            <div class="certif-name">🎓 {{ certification.cursus.name }}</div>
+            <div class="certif-infos">Obtenu le : {{ certification.createdAt|date('d/m/Y') }}</div>
+        </div>
+    {% else %}
+        <p>Vous n'avez pas encore validé de cursus.</p>
+    {% endfor %}
+
 </div>
 {% endblock %}

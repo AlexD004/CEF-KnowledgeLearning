@@ -47,10 +47,4 @@ class ClientInfosController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
-    #[Route('/apprenant/certificats', name: 'client_certificates')]
-    public function certificates(): Response
-    {
-        return $this->render('client/userCertificates.html.twig');
-    }
 }
